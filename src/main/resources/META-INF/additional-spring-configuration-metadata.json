@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "actable.table.auto",
+      "type": "java.lang.String",
+      "description": "Description for actable.table.auto."
+  }
+] }
