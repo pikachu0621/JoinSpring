@@ -4,5 +4,10 @@
       "name": "actable.table.auto",
       "type": "java.lang.String",
       "description": "Description for actable.table.auto."
-  }
-] }
+    },
+    {
+      "name": "config.submit.salt",
+      "type": "java.lang.String",
+      "description": "Description for config.submit.salt."
+    }
+  ] }

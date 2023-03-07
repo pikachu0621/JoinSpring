@@ -12,7 +12,7 @@ import com.mayunfeng.join.utils.TimeUtils
 import org.springframework.format.annotation.DateTimeFormat
 
 
-open class BaseModel {
+open  class BaseModel() {
     @TableId(type = IdType.AUTO)
     @IsKey
     @IsAutoIncrement
@@ -20,22 +20,27 @@ open class BaseModel {
     @Column
     var id: Long = 0
 
-    @IsNotNull
+
     @IsNativeDefValue
     @Column(
         name = "create_time",
         type = MySqlTypeConstant.DATETIME,
         defaultValue = "CURRENT_TIMESTAMP",
+        isNull = true,
         comment = "创建时间")
-    var createTime: String = ""
+    var createTime: String? = null
 
 
-    @IsNotNull
+
     @IsNativeDefValue
     @Column(
         name = "update_time",
         type = MySqlTypeConstant.DATETIME,
-        defaultValue = "CURRENT_TIMESTAMP",
+        defaultValue = "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        isNull = true,
         comment = "更新时间")
-    var updateTime: String = TimeUtils.getCurrentTime()
+    var updateTime: String? =  null
+
+    @TableField(exist = false)
+    var baseTag: Any? = null
 }

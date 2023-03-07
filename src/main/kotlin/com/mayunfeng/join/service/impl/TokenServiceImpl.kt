@@ -1,0 +1,66 @@
+package com.mayunfeng.join.service.impl
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
+import com.mayunfeng.join.mapper.TokenTableMapper
+import com.mayunfeng.join.model.TokenTableModel
+import com.mayunfeng.join.service.ITokenService
+import com.mayunfeng.join.utils.OtherUtils
+import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.TimeUtils
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
+import javax.annotation.Resource
+import kotlin.reflect.KMutableProperty1
+
+@Service
+class TokenServiceImpl : BaseServiceImpl(), ITokenService {
+
+
+    @Resource
+    private lateinit var tokenTableManager: TokenTableMapper
+
+    @Value("\${config.token.salt}")
+    private lateinit var salt: String
+
+
+    override fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTableModel {
+        val createToken = OtherUtils.createToken(salt, "$userId", userAccount, userPassword, "$tokenTime")
+        // 删除上一个用户绑定的数据
+        SqlUtils.deleteByField(tokenTableManager, "user_id", userId)
+        logi("创建的token $createToken")
+        return TokenTableModel(userId, createToken, tokenTime).apply {
+            tokenTableManager.insert(this)
+        }
+    }
+
+
+    override fun queryByToken(token: String): TokenTableModel? {
+        return SqlUtils.queryByFieldOne(tokenTableManager, "token_login", token)
+    }
+
+
+    override fun queryByUserId(userId: Long): TokenTableModel? {
+        return SqlUtils.queryByFieldOne(tokenTableManager, "user_id", userId)
+    }
+
+    override fun deleteByToken(token: String) {
+        SqlUtils.deleteByField(tokenTableManager, "token_login", token)
+    }
+
+    override fun deleteByUserId(userId: Long) {
+        SqlUtils.deleteByField(tokenTableManager, "user_id", userId)
+    }
+
+
+    // 2023-03-07 23:56:00
+    // yyyy-MM-dd HH:mm:ss
+    override fun verify(token: String): Boolean {
+        val tokenData = queryByToken(token) ?: return false
+        if (tokenData.tokenTime == -1L) return true
+        val currentTime = TimeUtils.getCurrentTime()
+        val timeDistance = TimeUtils.getTimeDistance(currentTime, tokenData.createTime!!)
+        logi("当前时间：$currentTime  token创建时间：${tokenData.createTime}  相差时间s：$timeDistance    token有效时间：${tokenData.tokenTime}")
+        return timeDistance <= tokenData.tokenTime
+    }
+
+}
