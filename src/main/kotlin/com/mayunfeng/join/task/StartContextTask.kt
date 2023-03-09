@@ -1,5 +1,6 @@
 package com.mayunfeng.join.task
 
+import com.mayunfeng.join.BaseCls
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
@@ -10,10 +11,7 @@ import java.util.*
 
 
 @Component
-class StartContextTask : ApplicationContextAware {
-
-    private val log: Logger = LoggerFactory.getLogger(StartContextTask::class.java)
-
+class StartContextTask : ApplicationContextAware, BaseCls() {
 
     override fun setApplicationContext(applicationContext: ApplicationContext) {
         println("                                                                                   ,-,------,   \n" +

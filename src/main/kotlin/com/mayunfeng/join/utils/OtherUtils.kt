@@ -1,8 +1,13 @@
 package com.mayunfeng.join.utils
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.util.DigestUtils
+import java.io.IOException
+import java.io.PrintWriter
+import java.io.Serializable
 import java.sql.Timestamp
 import java.util.regex.Pattern
+import javax.servlet.http.HttpServletResponse
 import kotlin.random.Random
 
 object OtherUtils {
@@ -73,6 +78,28 @@ object OtherUtils {
         val t = (Timestamp(System.currentTimeMillis()).time / 1000).toString()
         val r = Random.nextInt(100001, 200000).toString()
         return DigestUtils.md5DigestAsHex(("salt=${salt}&t=$t&r=$r$valueStr").toByteArray());
+    }
+
+
+    /**
+     * 拦截器 返回数据
+     */
+    fun returnJson(response: HttpServletResponse, jsonResult:  JsonResult<out Serializable>, run: (writer: PrintWriter) -> Unit = {}){
+        var writer: PrintWriter? = null
+        response.status = 200
+        response.apply {
+            characterEncoding = "UTF-8"
+            contentType = "application/json; charset=utf-8"
+        }
+        try {
+            writer = response.writer
+            writer.print(ObjectMapper().writeValueAsString(jsonResult))
+            run(writer)
+        } catch ( e: IOException){
+            // loge("拦截器输出流异常: ${e.message}")
+        } finally {
+            writer?.close()
+        }
     }
 
 

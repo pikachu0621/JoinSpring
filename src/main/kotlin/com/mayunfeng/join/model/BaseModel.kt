@@ -10,9 +10,10 @@ import com.gitee.sunchenbin.mybatis.actable.annotation.IsNotNull
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
 import com.mayunfeng.join.utils.TimeUtils
 import org.springframework.format.annotation.DateTimeFormat
+import java.io.Serializable
 
 
-open  class BaseModel() {
+open  class BaseModel(): Serializable {
     @TableId(type = IdType.AUTO)
     @IsKey
     @IsAutoIncrement

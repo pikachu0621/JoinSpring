@@ -1,4 +1,109 @@
-myf_join
+
+API 文档
+=====
+
+###>1. 登录API
+HTTP 方法：`POST`
+<br>
+请求 URL：`/myf-user-api/login-user`
+<br>
+参数提交类型：`Body -> form-data`
+<br>
+请求参数：
+
+|    参数    | 是否必选 |   类型   | 可选值范围 |  说明  |
+|:--------:|:----:|:------:|:-----:|:----:|
+| account  |  是   | string |   -   | 用户账号 |
+| password |  是   | string |   -   | 用户密码 |
+
+返回示例：
+```json
+{
+    "reason": "ok",
+    "error_code": 200,
+    "result": {
+        "userAccount": "123456",
+        "userPassword": "123456",
+        "userImg": "default_user_img.png",
+        "userSex": false,
+        "userName": "x-x-x",
+        "userUnit": "x-x-x-x",
+        "userAge": 0,
+        "userIntroduce": "这个家伙很懒，什么都没留下 >_<",
+        "userGrade": 0,
+        "userLimit": false,
+        "loginToken": "9ed1c12f7ff112c76f4f6e38e15c78b1",
+        "id": 1,
+        "createTime": "2023-03-08 22:02:03",
+        "updateTime": "2023-03-08 22:02:03",
+        "baseTag": null
+    }
+}
+```
+
+
+
+###>2. 获取签到历史记录API
+HTTP 方法：`GET`
+<br>
+请求 URL：`/myf-user-api/history-record`
+<br>
+参数提交类型：`Params`                           
+<br>
+请求参数：
+
+|     参数     | 是否必选 |   类型   | 可选值范围 |   说明    |
+|:----------:|:----:|:------:|:-----:|:-------:|
+| loginToken |  是   | string |   -   | 登录token |
+
+返回示例：
+```json
+{
+    "reason": "ok",
+    "error_code": 200,
+    "result": {
+        "userAccount": "123456",
+        "userPassword": "123456",
+        "userImg": "default_user_img.png",
+        "userSex": false,
+        "userName": "x-x-x",
+        "userUnit": "x-x-x-x",
+        "userAge": 0,
+        "userIntroduce": "这个家伙很懒，什么都没留下 >_<",
+        "userGrade": 0,
+        "userLimit": false,
+        "loginToken": "9ed1c12f7ff112c76f4f6e38e15c78b1",
+        "id": 1,
+        "createTime": "2023-03-08 22:02:03",
+        "updateTime": "2023-03-08 22:02:03",
+        "baseTag": null
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+数据库 myf_join
 ======
 所有表都存在
 ---

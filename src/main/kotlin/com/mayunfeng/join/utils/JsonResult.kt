@@ -8,7 +8,7 @@ const val OK = 200
 /**
  * 数据返回
  */
-data class JsonResult<T>(
+data class JsonResult<T: Serializable>(
     var reason: String? = "",
     var error_code: Int? = ERROR,
     var result: T? = null
@@ -16,11 +16,11 @@ data class JsonResult<T>(
 
     companion object {
 
-        fun <t> ok(data: t?, reason: String = "ok", error_code: Int = OK): JsonResult<t> {
+        fun <t: Serializable> ok(data: t?, reason: String = "ok", error_code: Int = OK): JsonResult<t> {
             return JsonResult(reason, error_code, data)
         }
 
-        fun err(reason: String?, error_code: Int): JsonResult<Void> {
+        fun err(reason: String?, error_code: Int): JsonResult<Serializable> {
             return JsonResult(reason, error_code, null)
         }
 

@@ -25,11 +25,9 @@ class UserServiceImpl: BaseServiceImpl(), IUserService {
     private var tokenTime: Long = -1
 
 
-
-    /**
-     * 用户登录 / 注册
-     */
     override fun login(userAccount: String?, userPassword: String?): JsonResult<UserTableModel> {
+
+        logi("[$userAccount]   ----  [$userPassword]")
 
         if (OtherUtils.isFieldEmpty(userAccount, userPassword))  throw ParameterException()
         userAccount!!
@@ -38,19 +36,36 @@ class UserServiceImpl: BaseServiceImpl(), IUserService {
 
         var userDate = SqlUtils.queryByFieldOne(userTableMapper, "user_account", userAccount)
         if (userDate == null){
+
+            if (userAccount.length > 12 || userAccount.length < 6) throw UserAccountLengthException()
+
+            if (userPassword.length > 12 || userPassword.length < 6) throw UserPasswordLengthException()
+
             // 注册
             userTableMapper.insert(UserTableModel(userAccount, userPassword))
         }
         // 登录
         userDate = SqlUtils.queryByFieldOne(userTableMapper, "user_account", userAccount)
+
         if (userDate!!.userPassword != userPassword) throw UserPasswordException()
+
         if (userDate.userLimit) throw UserBlacklistException()
 
         val put = tokenServiceImpl.put(userDate.id, userAccount, userPassword, tokenTime)
         userDate.loginToken = put.tokenLogin
 
-        logi(put.tokenLogin)
+        userDate.userPassword = ""
         return JsonResult.ok(userDate)
+    }
+
+
+
+    override fun userInfoByToken(tokenLogin: String): JsonResult<UserTableModel> {
+        val tokenBean = tokenServiceImpl.queryByToken(tokenLogin)!!
+        val userTableModel = userTableMapper.selectById(tokenBean.userId)
+        userTableModel.userPassword = ""
+        userTableModel.loginToken = ""
+        return JsonResult.ok(userTableModel)
     }
 
 

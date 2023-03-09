@@ -16,4 +16,11 @@ interface IUserService {
      */
     fun login(userAccount: String?, userPassword: String?): JsonResult<UserTableModel>
 
+
+    /**
+     * token 获取用户数据
+     * @param tokenLogin tokenLogin
+     */
+    fun userInfoByToken(tokenLogin: String): JsonResult<UserTableModel>
+
 }
