@@ -1,19 +1,16 @@
 package com.mayunfeng.join.model
 
 import com.baomidou.mybatisplus.annotation.*
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.annotation.IsAutoIncrement
 import com.gitee.sunchenbin.mybatis.actable.annotation.IsKey
 import com.gitee.sunchenbin.mybatis.actable.annotation.IsNativeDefValue
 import com.gitee.sunchenbin.mybatis.actable.annotation.IsNotNull
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
-import com.mayunfeng.join.utils.TimeUtils
-import org.springframework.format.annotation.DateTimeFormat
 import java.io.Serializable
 
 
-open  class BaseModel(): Serializable {
+open  class BaseTable(): Serializable {
     @TableId(type = IdType.AUTO)
     @IsKey
     @IsAutoIncrement

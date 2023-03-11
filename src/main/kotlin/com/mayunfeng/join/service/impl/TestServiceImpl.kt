@@ -1,5 +1,6 @@
 package com.mayunfeng.join.service.impl
 
+import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.service.ITestService
 import com.mayunfeng.join.service.ParameterException
 import com.mayunfeng.join.utils.JsonResult

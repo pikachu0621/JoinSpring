@@ -6,8 +6,11 @@ import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
 import java.io.Serializable
 
 
+/**
+ * token 表
+ */
 @TableName("myf_token_table")
-data class TokenTableModel(
+data class TokenTable(
 
     @Column(
         comment = "属于谁用户表id",
@@ -41,4 +44,4 @@ data class TokenTableModel(
     )
     var tokenFailure: Boolean =  false,
 
-): BaseModel(), Serializable
+): BaseTable(), Serializable

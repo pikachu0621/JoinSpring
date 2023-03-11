@@ -1,25 +1,15 @@
 package com.mayunfeng.join.interceptor
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.mayunfeng.join.BaseCls
+import com.mayunfeng.join.base.BaseCls
 import com.mayunfeng.join.service.TokenFailureException
 import com.mayunfeng.join.service.impl.TokenServiceImpl
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import org.springframework.web.servlet.HandlerInterceptor
-import org.springframework.web.servlet.ModelAndView
-import java.io.IOException
-import java.io.PrintWriter
-import java.io.Serializable
-import javax.annotation.Resource
-import javax.annotation.Resources
-import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpSession
 
 
 const val TOKEN_PARAMETER = "token"
@@ -53,7 +43,8 @@ class HttpWebInterceptor: HandlerInterceptor,  BaseCls() {
         ex: Exception?
     ) {
         super.afterCompletion(request, response, handler, ex)
-        log.info("http---访问控制器后")
+
+        log.info("http---访问控制器后 ${ex?.message}")
     }
 
 

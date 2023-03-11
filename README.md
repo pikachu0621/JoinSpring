@@ -157,9 +157,9 @@ HTTP 方法：`GET`
 |:---------------:|:----------:|
 |       id        |     id     | 
 |     user_id     | 用户ID-谁是创建的 | 
+|    group_img    |    组图标     | 
 |   group_name    |     名字     | 
 | group_introduce |     介绍     |
-|    group_tag    |     其他     | 
 
 *myf_join_group_table* 用户加入的组表
 ------------------------

@@ -1,13 +1,13 @@
 package com.mayunfeng.join.controller
 
+import com.mayunfeng.join.base.BaseController
 import com.mayunfeng.join.interceptor.TOKEN_PARAMETER
-import com.mayunfeng.join.model.UserTableModel
+import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.IUserService
 import com.mayunfeng.join.service.impl.UserServiceImpl
 import com.mayunfeng.join.utils.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Controller
 
 
 @RestController
@@ -24,13 +24,13 @@ class UserController : BaseController(), IUserService {
     override fun login(
         @RequestParam("account", required = false) userAccount: String?,
         @RequestParam("password", required = false) userPassword: String?
-    ): JsonResult<UserTableModel> = userServiceImpl.login(userAccount, userPassword)
+    ): JsonResult<UserTable> = userServiceImpl.login(userAccount, userPassword)
 
 
     @GetMapping("/user-info-token")
     override fun userInfoByToken(
         @RequestParam(TOKEN_PARAMETER, required = false) tokenLogin: String
-    ): JsonResult<UserTableModel> =
+    ): JsonResult<UserTable> =
         userServiceImpl.userInfoByToken(tokenLogin)
 
 

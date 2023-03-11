@@ -1,6 +1,5 @@
-package com.mayunfeng.join
+package com.mayunfeng.join.base
 
-import com.mayunfeng.join.controller.BaseController
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

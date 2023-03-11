@@ -1,6 +1,6 @@
 package com.mayunfeng.join.mapper
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
-import com.mayunfeng.join.model.TokenTableModel
+import com.mayunfeng.join.model.TokenTable
 
-interface TokenTableMapper : BaseMapper<TokenTableModel>
+interface TokenTableMapper : BaseMapper<TokenTable>

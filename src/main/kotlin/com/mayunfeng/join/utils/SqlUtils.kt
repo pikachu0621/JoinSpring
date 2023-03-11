@@ -2,9 +2,6 @@ package com.mayunfeng.join.utils
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
-import com.mayunfeng.join.mapper.UserTableMapper
-import com.mayunfeng.join.model.BaseModel
-import com.mayunfeng.join.model.UserTableModel
 
 object SqlUtils {
 

@@ -7,9 +7,13 @@ import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
 import java.io.Serializable
 
 
-// 用户
+
+/**
+ * 用户表
+ */
 @TableName("myf_user_table")
-data class UserTableModel(
+data class UserTable(
+
 
     @Column(
         comment = "用户账号",
@@ -28,9 +32,8 @@ data class UserTableModel(
     @Column(
         comment = "用户头像",
         isNull = false,
-        defaultValue = "default_user_img.png"
     )
-    var userImg: String? = "default_user_img.png",
+    var userImg: String = "",
 
 
     @Column(
@@ -96,4 +99,4 @@ data class UserTableModel(
 
     @TableField(exist = false)
     var loginToken: String? = null
-) : BaseModel(), Serializable
+) : BaseTable(), Serializable

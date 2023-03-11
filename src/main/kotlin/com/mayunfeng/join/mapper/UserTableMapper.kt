@@ -1,6 +1,6 @@
 package com.mayunfeng.join.mapper
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
-import com.mayunfeng.join.model.UserTableModel
+import com.mayunfeng.join.model.UserTable
 
-interface UserTableMapper : BaseMapper<UserTableModel>
+interface UserTableMapper : BaseMapper<UserTable>

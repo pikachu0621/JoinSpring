@@ -30,7 +30,7 @@ object OtherUtils {
      * 是否包含违法字符  true 包含
      */
     fun isFieldIllegal(vararg field: String): Boolean {
-        val regex = "[`!@#$%^&*()+=\\-|\\[\\]{}\";:'?/><,]"
+        val regex = "[`!#$%^&*()+=\\-|\\[\\]{}\";:'?/><,]"
         val compile = Pattern.compile(regex)
         field.forEach {
             if (compile.matcher(it).find()) {

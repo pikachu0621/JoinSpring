@@ -1,6 +1,6 @@
 package com.mayunfeng.join.service
 
-import com.mayunfeng.join.model.TokenTableModel
+import com.mayunfeng.join.model.TokenTable
 
 interface ITokenService {
 
@@ -14,7 +14,7 @@ interface ITokenService {
      * @param tokenTime 用户持续时长
      *
      */
-    fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTableModel
+    fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTable
 
 
 
@@ -24,7 +24,7 @@ interface ITokenService {
      *
      * @param token token
      */
-    fun queryByToken(token: String): TokenTableModel?
+    fun queryByToken(token: String): TokenTable?
 
 
 
@@ -33,7 +33,7 @@ interface ITokenService {
      *
      * @param userId userId
      */
-    fun queryByUserId(userId: Long): TokenTableModel?
+    fun queryByUserId(userId: Long): TokenTable?
 
 
     /**

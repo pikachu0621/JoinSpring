@@ -9,5 +9,10 @@
       "name": "config.submit.salt",
       "type": "java.lang.String",
       "description": "Description for config.submit.salt."
+    },
+    {
+      "name": "actable.database.type",
+      "type": "java.lang.String",
+      "description": "Description for actable.database.type."
     }
   ] }
