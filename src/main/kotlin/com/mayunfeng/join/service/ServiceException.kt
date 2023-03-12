@@ -15,8 +15,16 @@ class UserPasswordLengthException : BaseServiceException(-103, "密码长度请�
 
 class UserAccountLengthException : BaseServiceException(-104, "账号长度请保持在 (6~2)")
 
+class UserOldPasswordException : BaseServiceException(-104, "旧密码错误")
+
+// 日期时间 异常
+class DateTimeException : BaseServiceException(-104, "日期时间格式出错")
+
 // token
 class TokenFailureException : BaseServiceException(-201, "token无效")
+
+// 数据过长
+class DataLengthMaxException : BaseServiceException(-104, "数据过长")
 
 
 

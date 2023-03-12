@@ -1,6 +1,7 @@
 package com.mayunfeng.join.model
 
 import com.baomidou.mybatisplus.annotation.*
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.annotation.IsAutoIncrement
 import com.gitee.sunchenbin.mybatis.actable.annotation.IsKey
@@ -37,6 +38,7 @@ open  class BaseTable(): Serializable {
         defaultValue = "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
         isNull = true,
         comment = "更新时间")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var updateTime: String? =  null
 
     @TableField(exist = false)

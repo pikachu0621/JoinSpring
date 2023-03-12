@@ -13,6 +13,7 @@ interface ITestService {
 
     /**
      * 验证token 可用性
+     * @param token
      */
     fun testToken(token: String?): JsonResult<Boolean>
 

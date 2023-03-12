@@ -37,4 +37,26 @@ object TimeUtils {
     }
 
 
+
+    fun getDateDistanceYear(statrDate: String, endDate: String, dateType: String = "yyyy-MM-dd"): Int {
+        val sdf = SimpleDateFormat(dateType, Locale.CHINA)
+        val bef = Calendar.getInstance()
+        val aft = Calendar.getInstance()
+        bef.time = sdf.parse(statrDate)
+        aft.time = sdf.parse(endDate)
+        val surplus = aft[Calendar.DATE] - bef[Calendar.DATE]
+        var result = aft[Calendar.MONTH] - bef[Calendar.MONTH]
+        val year = aft[Calendar.YEAR] - bef[Calendar.YEAR]
+        println(result)
+        result = if (result > 0) {
+            1
+        } else if (result == 0) {
+            if (surplus <= 0) 0 else 1
+        } else {
+            0
+        }
+        return year + result
+    }
+
+
 }

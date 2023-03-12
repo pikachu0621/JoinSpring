@@ -22,7 +22,6 @@ class HttpWebInterceptor: HandlerInterceptor,  BaseCls() {
 
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-
         val token = request.getParameter(TOKEN_PARAMETER)
         log.info("http---访问控制器前 $token --- ${request.servletPath}")
 

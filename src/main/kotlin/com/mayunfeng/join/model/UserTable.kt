@@ -2,10 +2,12 @@ package com.mayunfeng.join.model
 
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
 import java.io.Serializable
-
+import kotlin.system.exitProcess
 
 
 /**
@@ -14,6 +16,8 @@ import java.io.Serializable
 @TableName("myf_user_table")
 data class UserTable(
 
+    //     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // 不返回给前端
+    //     @TableField(exist = false) 不写入数据库
 
     @Column(
         comment = "用户账号",
@@ -26,6 +30,7 @@ data class UserTable(
         comment = "用户账号密码",
         isNull = false
     )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var userPassword: String = "",
 
 
@@ -62,14 +67,17 @@ data class UserTable(
     var userUnit: String? = "x-x-x-x",
 
 
-    @Column(
-        comment = "用户年龄",
-        isNull = true,
-        length = 3,
-        defaultValue = "0"
-    )
-    var userAge: Int = 0,
 
+    @Column(
+        comment = "用户出生日期",
+        isNull = true,
+        defaultValue = "2000-01-01"
+    )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // 不返回给前端
+    var userBirth: String = "2000-01-01",
+
+    @TableField(exist = false)
+    var userAge: Int? = 0,
 
     @Column(
         comment = "用户简介",
@@ -94,9 +102,11 @@ data class UserTable(
         length = 1,
         defaultValue = "0"
     )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var userLimit: Boolean = false,
 
 
     @TableField(exist = false)
-    var loginToken: String? = null
+    var loginToken: String? = null,
+
 ) : BaseTable(), Serializable
