@@ -1,7 +1,6 @@
 package com.mayunfeng.join.controller
 
 import com.mayunfeng.join.base.BaseController
-import com.mayunfeng.join.interceptor.TOKEN_PARAMETER
 import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.IUserService
 import com.mayunfeng.join.service.impl.UserServiceImpl
@@ -34,60 +33,57 @@ class UserController : BaseController(), IUserService {
 
 
     @GetMapping("/user-info")
-    override fun userInfoByToken(
-        @RequestParam(TOKEN_PARAMETER) tokenLogin: String
-    ): JsonResult<UserTable> =
-        userServiceImpl.userInfoByToken(tokenLogin)
+    override fun userInfoByToken(): JsonResult<UserTable> =
+        userServiceImpl.userInfoByToken()
 
 
 
 
     @PostMapping("/edit-img")
     @ResponseBody
-    override fun editImage(@RequestParam(TOKEN_PARAMETER) tokenLogin: String,
-                           @RequestParam("img", required = false) userImage: MultipartFile?
-    ): JsonResult<UserTable> = userServiceImpl.editImage(tokenLogin, userImage)
+    override fun editImage(
+        @RequestParam("img", required = false) userImage: MultipartFile?
+    ): JsonResult<UserTable> = userServiceImpl.editImage(userImage)
 
 
 
 
     @GetMapping("/edit-name")
-    override fun editName(@RequestParam(TOKEN_PARAMETER) tokenLogin: String,
-                          @RequestParam("name", required = false) userName: String?
-    ): JsonResult<UserTable> = userServiceImpl.editName(tokenLogin , userName)
+    override fun editName(
+        @RequestParam("name", required = false) userName: String?
+    ): JsonResult<UserTable> = userServiceImpl.editName(userName)
 
 
 
 
     @GetMapping("/edit-sex")
     override fun editSex(
-        @RequestParam(TOKEN_PARAMETER) tokenLogin: String,
         @RequestParam("sex", required = false) userSex: Boolean?
-    ): JsonResult<UserTable> = userServiceImpl.editSex(tokenLogin , userSex)
+    ): JsonResult<UserTable> = userServiceImpl.editSex(userSex)
 
 
 
 
     @GetMapping("/edit-birth")
-    override fun editBirth(@RequestParam(TOKEN_PARAMETER) tokenLogin: String,
-                           @RequestParam("birth", required = false)  userBirth: String?
-    ): JsonResult<UserTable> = userServiceImpl.editBirth(tokenLogin , userBirth)
+    override fun editBirth(
+        @RequestParam("birth", required = false) userBirth: String?
+    ): JsonResult<UserTable> = userServiceImpl.editBirth(userBirth)
 
 
 
 
     @GetMapping("/edit-ird")
-    override fun editIntroduce(@RequestParam(TOKEN_PARAMETER) tokenLogin: String,
-                               @RequestParam("ird", required = false) userIntroduce: String?
-    ): JsonResult<UserTable> = userServiceImpl.editIntroduce(tokenLogin, userIntroduce)
+    override fun editIntroduce(
+        @RequestParam("ird", required = false) userIntroduce: String?
+    ): JsonResult<UserTable> = userServiceImpl.editIntroduce(userIntroduce)
 
 
 
 
     @GetMapping("/edit-unit")
-    override fun editUnit(@RequestParam(TOKEN_PARAMETER) tokenLogin: String,
-                          @RequestParam("unit", required = false) userUnit: String?
-    ): JsonResult<UserTable> = userServiceImpl.editUnit(tokenLogin, userUnit)
+    override fun editUnit(
+        @RequestParam("unit", required = false) userUnit: String?
+    ): JsonResult<UserTable> = userServiceImpl.editUnit(userUnit)
 
 
 
@@ -95,9 +91,8 @@ class UserController : BaseController(), IUserService {
     @PostMapping("/edit-password")
     @ResponseBody
     override fun editPassword(
-        @RequestParam(TOKEN_PARAMETER) tokenLogin: String,
         @RequestParam("old-password", required = false) userOldPassword: String?,
         @RequestParam("new-password", required = false) userNewPassword: String?,
-    ): JsonResult<UserTable> = userServiceImpl.editPassword(tokenLogin, userOldPassword, userNewPassword)
+    ): JsonResult<UserTable> = userServiceImpl.editPassword(userOldPassword, userNewPassword)
 
 }

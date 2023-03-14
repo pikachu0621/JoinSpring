@@ -1,13 +1,14 @@
 package com.mayunfeng.join.service.impl
 
 import com.mayunfeng.join.base.BaseServiceImpl
+import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.mapper.TokenTableMapper
 import com.mayunfeng.join.model.TokenTable
 import com.mayunfeng.join.service.ITokenService
 import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.SqlUtils
 import com.mayunfeng.join.utils.TimeUtils
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import javax.annotation.Resource
 
@@ -18,12 +19,12 @@ class TokenServiceImpl : BaseServiceImpl(), ITokenService {
     @Resource
     private lateinit var tokenTableManager: TokenTableMapper
 
-    @Value("\${config.token.salt}")
-    private lateinit var salt: String
+    @Autowired
+    private lateinit var AppConfig: AppConfig
 
 
     override fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTable {
-        val createToken = OtherUtils.createToken(salt, "$userId", userAccount, userPassword, "$tokenTime")
+        val createToken = OtherUtils.createToken(AppConfig.configSalt, "$userId", userAccount, userPassword, "$tokenTime")
         // 删除上一个用户绑定的数据
         SqlUtils.deleteByField(tokenTableManager, "user_id", userId)
         logi("创建的token $createToken")

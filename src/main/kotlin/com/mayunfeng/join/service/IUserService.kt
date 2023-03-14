@@ -20,67 +20,74 @@ interface IUserService {
 
     /**
      * token 获取用户数据
+     * 需要token
      *
-     * @param tokenLogin tokenLogin
      */
-    fun userInfoByToken(tokenLogin: String): JsonResult<UserTable>
+    fun userInfoByToken(): JsonResult<UserTable>
 
 
     /**
      * 修改头像
+     * 需要token
      *
      * @param userImage 用户头像
      */
-    fun editImage(tokenLogin: String, userImage: MultipartFile?): JsonResult<UserTable>
+    fun editImage(userImage: MultipartFile?): JsonResult<UserTable>
 
     /**
      * 修改姓名
+     * 需要token
      *
      * @param userName 用户姓名
      */
-    fun editName(tokenLogin: String, userName: String?): JsonResult<UserTable>
+    fun editName(userName: String?): JsonResult<UserTable>
 
 
     /**
      * 修改性别
+     * 需要token
      *
      * @param userSex 用户性别
      */
-    fun editSex(tokenLogin: String, userSex: Boolean?): JsonResult<UserTable>
+    fun editSex(userSex: Boolean?): JsonResult<UserTable>
 
 
     /**
      * 修改出生日期
      * yyyy-MM-dd
+     * 需要token
      *
      * @param userBirth 出生日期
      */
-    fun editBirth(tokenLogin: String, userBirth: String?): JsonResult<UserTable>
+    fun editBirth(userBirth: String?): JsonResult<UserTable>
 
 
 
     /**
      * 修改个性签名
+     * 需要token
      *
      * @param userIntroduce 个签
      */
-    fun editIntroduce(tokenLogin: String, userIntroduce: String?): JsonResult<UserTable>
+    fun editIntroduce(userIntroduce: String?): JsonResult<UserTable>
 
 
     /**
      * 修改所属单位
+     * 需要token
      *
      * @param userUnit 所属机构
      */
-    fun editUnit(tokenLogin: String, userUnit: String?): JsonResult<UserTable>
+    fun editUnit(userUnit: String?): JsonResult<UserTable>
 
 
     /**
      * 修改密码
+     * 需要token
      *
      * @param userOldPassword 旧密码
      * @param userNewPassword 新密码
      */
-    fun editPassword(tokenLogin: String, userOldPassword: String?, userNewPassword: String?): JsonResult<UserTable>
+    fun editPassword(userOldPassword: String?, userNewPassword: String?): JsonResult<UserTable>
 
 }

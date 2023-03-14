@@ -54,17 +54,17 @@ data class UserTable(
     @Column(
         comment = "用户姓名",
         isNull = true,
-        defaultValue = "x-x-x"
+        defaultValue = "default"
     )
-    var userName: String? = "x-x-x",
+    var userName: String? = "default",
 
 
     @Column(
         comment = "用户 学校/单位",
         isNull = true,
-        defaultValue = "x-x-x-x"
+        defaultValue = "default"
     )
-    var userUnit: String? = "x-x-x-x",
+    var userUnit: String? = "default",
 
 
 

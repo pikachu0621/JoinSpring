@@ -1,5 +1,6 @@
 package com.mayunfeng.join
 
+import com.mayunfeng.join.config.AppConfig
 import org.mybatis.spring.annotation.MapperScan
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -12,10 +13,8 @@ import org.springframework.context.annotation.ComponentScan
 @ComponentScan("com.gitee.sunchenbin.mybatis.actable.manager.*", "com.mayunfeng.join.*")
 class MyfJoinApplication
 
-private lateinit var runApplication: ConfigurableApplicationContext
+lateinit var runApplication: ConfigurableApplicationContext
 
 fun main(args: Array<String>) {
     runApplication = runApplication<MyfJoinApplication>(*args)
 }
-
-fun getRunApplication() = runApplication

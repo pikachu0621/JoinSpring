@@ -11,6 +11,13 @@ interface ITestService {
     fun test(): JsonResult<String>
 
 
+
+    /**
+     * 验证token 可用性
+     * @param aes
+     */
+    fun testTime(aes: String?): JsonResult<Boolean>
+
     /**
      * 验证token 可用性
      * @param token

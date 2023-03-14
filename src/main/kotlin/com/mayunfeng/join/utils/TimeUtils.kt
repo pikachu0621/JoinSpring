@@ -28,6 +28,7 @@ object TimeUtils {
         }.timeInMillis) / 1000
         return abs(time)
     }
+    fun getTimeDistance(beginDate: Long, endDate: Long): Long = getTimeDistance(Date(beginDate), Date(endDate))
 
 
     fun getTimeDistance(beginDate: String, endDate: String, format: String = "yyyy-MM-dd HH:mm:ss"): Long {
@@ -47,7 +48,6 @@ object TimeUtils {
         val surplus = aft[Calendar.DATE] - bef[Calendar.DATE]
         var result = aft[Calendar.MONTH] - bef[Calendar.MONTH]
         val year = aft[Calendar.YEAR] - bef[Calendar.YEAR]
-        println(result)
         result = if (result > 0) {
             1
         } else if (result == 0) {

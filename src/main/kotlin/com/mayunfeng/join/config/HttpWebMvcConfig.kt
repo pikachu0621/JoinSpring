@@ -21,10 +21,6 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
     @Autowired
     private lateinit var httpWebInterceptor: HttpWebInterceptor
 
-    @Value("\${config.user.image.path}")
-    private lateinit var userImg: String
-    @Value("\${config.user.static.path}")
-    private lateinit var userStatic: String
     // jar 相对路径
     private val userDir = "${System.getProperty("user.dir")}${File.separator}"
 
@@ -47,7 +43,7 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
     // 添加静态资源路径
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         // 开放用户静态资源
-        // registry.addResourceHandler("user/**").addResourceLocations("file:$userDir$userStatic${File.separator}")
+        // registry.addResourceHandler("user/**").addResourceLocations("file:$configUserDir$configUserStatic${File.separator}")
     }
 
     // 图片转换器   扩展消息转换器

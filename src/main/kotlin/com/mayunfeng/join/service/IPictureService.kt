@@ -3,6 +3,7 @@ package com.mayunfeng.join.service
 import com.mayunfeng.join.utils.JsonResult
 import org.springframework.web.multipart.MultipartFile
 import java.awt.image.BufferedImage
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 interface IPictureService {
@@ -14,7 +15,7 @@ interface IPictureService {
      * @param pictureMd5 图片名
      * @return 图片流
      */
-    fun requestImage(pictureMd5: String?,  response: HttpServletResponse) : BufferedImage
+    fun requestImage(pictureMd5: String?, c: String?, response: HttpServletResponse) : BufferedImage
 
 
     /**

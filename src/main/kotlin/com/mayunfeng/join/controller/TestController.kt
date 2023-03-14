@@ -22,6 +22,10 @@ class TestController : BaseController(), ITestService {
     override fun test(): JsonResult<String> = testServiceImpl.test()
 
 
+    @GetMapping("/test-time/{time}", "/test-time")
+    override fun testTime(@PathVariable("time", required = false) aes: String?): JsonResult<Boolean> = testServiceImpl.testTime(aes)
+
+
     @GetMapping("/test-token/{token}", "/test-token")
     override fun testToken(@PathVariable("token", required = false)  token: String?): JsonResult<Boolean> =
         testServiceImpl.testToken(token)
