@@ -23,8 +23,11 @@ class AppConfig {
     @Value("\${config.default.pic-name}")
     var configDefaultPicName: String = ""
 
-    @Value("\${config.default.pic-path}")
-    var configDefaultPic: String = ""
+    @Value("\${config.default.pic-boy-path}")
+    var configDefaultPicBoy: String = ""
+
+    @Value("\${config.default.pic-girl-path}")
+    var configDefaultPicGirl: String = ""
 
     @Value("\${config.token.salt}")
     var configSalt: String = ""
@@ -41,17 +44,18 @@ class AppConfig {
     @Value("\${config.image.size}")
     var configImageSize: Int = 10
 
-    @Value("\${config.image.type}")
-    var configImageType: String = ""
-
     @Value("\${config.image.time}")
     var configImageTime: Long = 60
 
     @Value("\${config.image.password}")
     var configImagePassword: String = ""
 
+    @Value("\${client.config.group-type}")
+    var clientConfigGroupType: Array<String> = arrayOf()
+
 
     val configUserDir = "${System.getProperty("user.dir")}${File.separator}"
+
 
     fun configUserStaticFilePath(): String = "$configUserDir$configUserStatic${File.separator}"
     fun configUserImageFilePath(): String = "${configUserStaticFilePath()}$configUserImg${File.separator}"

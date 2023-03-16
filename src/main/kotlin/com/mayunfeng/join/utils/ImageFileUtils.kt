@@ -69,12 +69,34 @@ object ImageFileUtils {
         val read = ImageIO.read(input)
         if (read.width <= 0 || read.height <= 0 ) return null
         val newBufferedImage: BufferedImage = BufferedImage(read.width, read.height, BufferedImage.TYPE_INT_RGB).apply {
-            createGraphics().drawImage(read, 0, 0, Color.WHITE, null);
+            createGraphics().drawImage(read, 0, 0, Color.WHITE, null)
         }
         val nameNotSuffix = File("${output.parent}${File.separator}${getFileNameNotSuffix(output)}.$type")
         val write = ImageIO.write(newBufferedImage, type, nameNotSuffix)
         input.close()
         return if (write) nameNotSuffix.name else null
+    }
+
+    @JvmStatic
+    fun writeImageToPNG(input: InputStream, output: File, type: String = "png"): String? {
+        val read = ImageIO.read(input)
+        if (read.width <= 0 || read.height <= 0 ) return null
+        val newBufferedImage: BufferedImage = BufferedImage(read.width, read.height, BufferedImage.TYPE_INT_ARGB).apply {
+            createGraphics()
+        }
+        val nameNotSuffix = File("${output.parent}${File.separator}${getFileNameNotSuffix(output)}.$type")
+        val write = ImageIO.write(newBufferedImage, type, nameNotSuffix)
+        input.close()
+        return if (write) nameNotSuffix.name else null
+    }
+
+
+    /// 读取文件到 bytes
+    fun readImageBytes(file: File): ByteArray{
+        val inputStream = FileInputStream(file)
+        val bytes = ByteArray(inputStream.available())
+        inputStream.read(bytes, 0, inputStream.available())
+        return bytes
     }
 
 

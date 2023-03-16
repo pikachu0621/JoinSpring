@@ -2,18 +2,17 @@ package com.mayunfeng.join.service.impl
 
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
-import com.mayunfeng.join.service.ITestService
+import com.mayunfeng.join.service.IPublicService
 import com.mayunfeng.join.service.ParameterException
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.web.util.UriComponentsBuilder
 import javax.servlet.http.HttpServletRequest
 
 
 @Service
-class TestServiceImpl:  BaseServiceImpl(), ITestService {
+class PublicServiceImpl:  BaseServiceImpl(), IPublicService {
 
 
     @Autowired
@@ -40,4 +39,5 @@ class TestServiceImpl:  BaseServiceImpl(), ITestService {
         return JsonResult.ok(tokenServiceImpl.verify(token!!))
     }
 
+    override fun getGroupType(): JsonResult<Array<String>> =JsonResult.ok(APPConfig.clientConfigGroupType)
 }

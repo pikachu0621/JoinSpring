@@ -16,15 +16,15 @@ import javax.annotation.Resource
 class TokenServiceImpl : BaseServiceImpl(), ITokenService {
 
 
-    @Resource
+    @Autowired
     private lateinit var tokenTableManager: TokenTableMapper
 
     @Autowired
-    private lateinit var AppConfig: AppConfig
+    private lateinit var APPConfig: AppConfig
 
 
     override fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTable {
-        val createToken = OtherUtils.createToken(AppConfig.configSalt, "$userId", userAccount, userPassword, "$tokenTime")
+        val createToken = OtherUtils.createToken(APPConfig.configSalt, "$userId", userAccount, userPassword, "$tokenTime")
         // 删除上一个用户绑定的数据
         SqlUtils.deleteByField(tokenTableManager, "user_id", userId)
         logi("创建的token $createToken")

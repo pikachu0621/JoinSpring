@@ -1,5 +1,6 @@
 package com.mayunfeng.join.model
 
+import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import java.io.Serializable
@@ -28,17 +29,28 @@ data class GroupTable(
 
     @Column(
         comment = "名字",
-        isNull = true,
-        defaultValue = "x-x-x"
+        isNull = false,
+        defaultValue = "default"
     )
-    var groupName: String? = "x-x-x",
+    var groupName: String = "default",
 
 
     @Column(
         comment = "介绍",
         isNull = true,
-        defaultValue = "x-x-x"
+        defaultValue = "default"
     )
-    var groupIntroduce: String? = "x-x-x",
+    var groupIntroduce: String? = "default",
+
+    @Column(
+        comment = "类型",
+        isNull = true,
+        defaultValue = "default"
+    )
+    var groupType: String? = "default",
+
+    // 当前群里的人数
+    @TableField(exist = false)
+    var groupPeople: Int = 0
 
 ): BaseTable(), Serializable

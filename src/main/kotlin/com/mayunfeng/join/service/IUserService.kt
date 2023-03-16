@@ -3,6 +3,7 @@ package com.mayunfeng.join.service
 import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.utils.JsonResult
 import org.springframework.web.multipart.MultipartFile
+import java.awt.image.BufferedImage
 
 interface IUserService {
 
@@ -27,12 +28,24 @@ interface IUserService {
 
 
     /**
+     * 加载用户头像
+     * 需要token
+     * @param c 时效AES 可空
+     *
+     */
+    fun userImage(c: String?): BufferedImage
+
+
+
+    /**
      * 修改头像
      * 需要token
      *
      * @param userImage 用户头像
      */
     fun editImage(userImage: MultipartFile?): JsonResult<UserTable>
+
+
 
     /**
      * 修改姓名

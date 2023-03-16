@@ -10,7 +10,7 @@ object TimeUtils {
     fun getCurrentTime(
         format: String = "yyyy-MM-dd HH:mm:ss",
         date: Date = Date()
-    ): String = SimpleDateFormat(format, Locale.CHINA).format(date)
+    ): String = SimpleDateFormat(format, Locale.SIMPLIFIED_CHINESE).format(date)
 
 
     /**
@@ -32,7 +32,7 @@ object TimeUtils {
 
 
     fun getTimeDistance(beginDate: String, endDate: String, format: String = "yyyy-MM-dd HH:mm:ss"): Long {
-        val format = SimpleDateFormat(format, Locale.CHINA)
+        val format = SimpleDateFormat(format, Locale.SIMPLIFIED_CHINESE)
         return getTimeDistance(format.parse(beginDate), format.parse(endDate))
 
     }
@@ -40,7 +40,7 @@ object TimeUtils {
 
 
     fun getDateDistanceYear(statrDate: String, endDate: String, dateType: String = "yyyy-MM-dd"): Int {
-        val sdf = SimpleDateFormat(dateType, Locale.CHINA)
+        val sdf = SimpleDateFormat(dateType, Locale.SIMPLIFIED_CHINESE)
         val bef = Calendar.getInstance()
         val aft = Calendar.getInstance()
         bef.time = sdf.parse(statrDate)

@@ -12,17 +12,21 @@ import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.SqlUtils
 import com.mayunfeng.join.utils.TimeUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import java.awt.image.BufferedImage
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.annotation.Resource
+import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 
 @Service
 class UserServiceImpl : BaseServiceImpl(), IUserService {
 
-    @Resource
+    @Autowired
     private lateinit var userTableMapper: UserTableMapper
 
     @Autowired
@@ -37,8 +41,11 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     @Autowired
     private lateinit var request: HttpServletRequest
 
+    @Autowired
+    private lateinit var resourceLoader: ResourceLoader
+
+
     override fun login(userAccount: String?, userPassword: String?): JsonResult<UserTable> {
-        logi("[$userAccount]   ----  [$userPassword]")
         if (OtherUtils.isFieldEmpty(userAccount, userPassword)) throw ParameterException()
         userAccount!!
         userPassword!!
@@ -71,58 +78,96 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
 
 
     override fun userInfoByToken(): JsonResult<UserTable> {
-        val tokenBean = tokenServiceImpl.queryByToken(request.getHeader(TOKEN_PARAMETER))!!
+        val tokenBean = tokenServiceImpl.queryByToken(OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!)!!
         val userData = userTableMapper.selectById(tokenBean.userId)
         return JsonResult.ok(disposeReturnUserData(userData))
     }
 
 
-    override fun editImage(
-        userImage: MultipartFile?
-    ): JsonResult<UserTable> {
-        // todo 上传图片
-        pictureServiceImpl.upImage(userImage).error_code ?: throw BaseServiceException()
 
 
-        return JsonResult.ok(UserTable())
+    override fun userImage(c: String?): BufferedImage {
+        val tokenBen = tokenServiceImpl.queryByToken(OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!)
+        val userBen = userTableMapper.selectById(tokenBen!!.userId)
+        return if(userBen.userImg == APPConfig.configDefaultPicName ){
+            if (userBen.userSex!!)
+                ImageIO.read(resourceLoader.getResource(APPConfig.configDefaultPicBoy).inputStream)
+            else
+                ImageIO.read(resourceLoader.getResource(APPConfig.configDefaultPicGirl).inputStream)
+        } else {
+            pictureServiceImpl.requestImage(userBen.userImg, c)
+        }
     }
 
 
-    override fun editName(userName: String?): JsonResult<UserTable> {
-        return JsonResult.ok(
+    // 上传图片
+    override fun editImage(
+        userImage: MultipartFile?
+    ): JsonResult<UserTable> =
+        JsonResult.ok(
             disposeReturnUserData(
                 editOneSqlValue(
-                    request.getHeader(TOKEN_PARAMETER),
+                    OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!,
+                    arrayOf(userImage)
+                ) {
+                    // 删除只有本人绑定的图片数据
+                    val queryByFieldList = SqlUtils.queryByFieldList(userTableMapper, "user_img", it.userImg)
+                    if (!queryByFieldList.isNullOrEmpty()) {
+                        if(queryByFieldList.size <= 1){
+                            File("${APPConfig.configUserImageFilePath()}${it.userImg}").delete()
+                        }
+                    }
+                    it.userImg = pictureServiceImpl.upImage(userImage).result!!
+                })
+        )
+
+
+    override fun editName(userName: String?): JsonResult<UserTable> =
+        JsonResult.ok(
+            disposeReturnUserData(
+                editOneSqlValue(
+                    OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!,
                     arrayOf(userName)
                 ) {
                     it.userName = userName
                 })
         )
-    }
 
 
     override fun editSex(userSex: Boolean?): JsonResult<UserTable> =
-        JsonResult.ok(disposeReturnUserData(editOneSqlValue(request.getHeader(TOKEN_PARAMETER), arrayOf(userSex)) {
-            it.userSex = userSex
-        }))
+        JsonResult.ok(
+            disposeReturnUserData(
+                editOneSqlValue(
+                    OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!,
+                    arrayOf(userSex)
+                ) {
+                    it.userSex = userSex
+                })
+        )
 
 
     override fun editBirth(userBirth: String?): JsonResult<UserTable> =
-        JsonResult.ok(disposeReturnUserData(editOneSqlValue(request.getHeader(TOKEN_PARAMETER), arrayOf(userBirth)) {
-            try {
-                SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).parse(userBirth!!)
-            } catch (e: Exception) {
-                throw DateTimeException()
-            }
-            it.userBirth = userBirth
-        }))
+        JsonResult.ok(
+            disposeReturnUserData(
+                editOneSqlValue(
+                    OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!,
+                    arrayOf(userBirth)
+                ) {
+                    try {
+                        SimpleDateFormat("yyyy-MM-dd", Locale.SIMPLIFIED_CHINESE).parse(userBirth!!)
+                    } catch (e: Exception) {
+                        throw DateTimeException()
+                    }
+                    it.userBirth = userBirth
+                })
+        )
 
 
     override fun editIntroduce(userIntroduce: String?): JsonResult<UserTable> =
         JsonResult.ok(
             disposeReturnUserData(
                 editOneSqlValue(
-                    request.getHeader(TOKEN_PARAMETER),
+                    OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!,
                     arrayOf(userIntroduce)
                 ) {
                     it.userIntroduce = userIntroduce
@@ -131,27 +176,34 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
 
 
     override fun editUnit(userUnit: String?): JsonResult<UserTable> =
-        JsonResult.ok(disposeReturnUserData(editOneSqlValue(request.getHeader(TOKEN_PARAMETER), arrayOf(userUnit)) {
-            it.userUnit = userUnit
-        }))
+        JsonResult.ok(
+            disposeReturnUserData(
+                editOneSqlValue(
+                    OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!,
+                    arrayOf(userUnit)
+                ) {
+                    it.userUnit = userUnit
+                })
+        )
 
 
     override fun editPassword(
         userOldPassword: String?,
         userNewPassword: String?
     ): JsonResult<UserTable> {
-        val tokenLogin = request.getHeader(TOKEN_PARAMETER)
+        val tokenLogin = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         return JsonResult.ok(
             disposeReturnUserData(
                 editOneSqlValue(
-                    request.getHeader(tokenLogin),
+                    tokenLogin,
                     arrayOf(userOldPassword, userNewPassword)
                 ) {
                     if (it.userPassword != userOldPassword!!) throw UserOldPasswordException()
                     if (userNewPassword!!.length > APPConfig.configMaxLength || userNewPassword.length < APPConfig.configMinLength) throw UserPasswordLengthException()
                     if (it.userPassword == userNewPassword) throw UserEquallyPasswordException()
+                    if (OtherUtils.isFieldIllegal(userNewPassword)) throw ParameterIllegalException()
                     it.userPassword = userNewPassword
-                    tokenServiceImpl.deleteByToken(request.getHeader(tokenLogin))
+                    tokenServiceImpl.deleteByToken(tokenLogin)
                 })
         )
     }
@@ -162,12 +214,20 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
      */
     private fun disposeReturnUserData(userData: UserTable): UserTable {
         // 限制时间
-        userData.userImg = "/myf-pic-api/${
-            if (APPConfig.configTokenTime != -1L) {
-                val createTimeAESBCB = OtherUtils.createTimeAESBCB(APPConfig.configSalt)
-                "${userData.userImg}?c=$createTimeAESBCB"
+        // 可以不加 userData.userImg 直接根据 用户token 获取   但是防止前端缓存 要加上
+        if(userData.userImg == APPConfig.configDefaultPicName){
+            userData.userImg = if (userData.userSex!!){
+                APPConfig.configDefaultPicName + "_boy"
             } else {
-                userData.userImg
+                APPConfig.configDefaultPicName + "_girl"
+            }
+        }
+        userData.userImg = "/myf-user-api/user-img/${userData.userImg}${
+            if (APPConfig.configImageTime != -1L) {
+                val createTimeAESBCB = OtherUtils.createTimeAESBCB(APPConfig.configSalt)
+                "?c=$createTimeAESBCB"
+            } else {
+                ""
             }
         }"
         userData.userAge = TimeUtils.getDateDistanceYear(

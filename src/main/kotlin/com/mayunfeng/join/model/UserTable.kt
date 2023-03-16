@@ -73,7 +73,6 @@ data class UserTable(
         isNull = true,
         defaultValue = "2000-01-01"
     )
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // 不返回给前端
     var userBirth: String = "2000-01-01",
 
     @TableField(exist = false)

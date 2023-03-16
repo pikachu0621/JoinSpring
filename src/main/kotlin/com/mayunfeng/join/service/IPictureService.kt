@@ -15,7 +15,7 @@ interface IPictureService {
      * @param pictureMd5 图片名
      * @return 图片流
      */
-    fun requestImage(pictureMd5: String?, c: String?, response: HttpServletResponse) : BufferedImage
+    fun requestImage(pictureMd5: String?, c: String?) : BufferedImage
 
 
     /**

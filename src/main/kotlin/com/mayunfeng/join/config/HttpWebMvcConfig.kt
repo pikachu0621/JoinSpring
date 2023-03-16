@@ -21,15 +21,15 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
     @Autowired
     private lateinit var httpWebInterceptor: HttpWebInterceptor
 
-    // jar 相对路径
-    private val userDir = "${System.getProperty("user.dir")}${File.separator}"
+    @Autowired
+    private lateinit var APPConfig: AppConfig
 
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(httpWebInterceptor) // 注册拦截器
             .addPathPatterns("/**")     // 拦截所有请求，包括静态资源文件
             .excludePathPatterns(
                 "/myf-user-api/login-user",
-                "/myf-test-api/**",
+                "/myf-puc-api/**",
                 "/*.html",
                 "/css/**",
                 "/images/**",
@@ -42,8 +42,8 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
 
     // 添加静态资源路径
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        // 开放用户静态资源
-        // registry.addResourceHandler("user/**").addResourceLocations("file:$configUserDir$configUserStatic${File.separator}")
+        // 开放用户静态资源  会走拦截器
+        //  registry.addResourceHandler("${APPConfig.configUserStatic}/**").addResourceLocations("file:${APPConfig.configUserStaticFilePath()}")
     }
 
     // 图片转换器   扩展消息转换器

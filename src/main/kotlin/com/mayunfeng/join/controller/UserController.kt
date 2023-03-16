@@ -7,7 +7,9 @@ import com.mayunfeng.join.service.impl.UserServiceImpl
 import com.mayunfeng.join.utils.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.web.multipart.MultipartFile
+import java.awt.image.BufferedImage
 
 
 @RestController
@@ -20,8 +22,6 @@ class UserController : BaseController(), IUserService {
     private lateinit var userServiceImpl: UserServiceImpl
 
 
-
-
     @PostMapping("/login-user")
     @ResponseBody
     override fun login(
@@ -30,13 +30,14 @@ class UserController : BaseController(), IUserService {
     ): JsonResult<UserTable> = userServiceImpl.login(userAccount, userPassword)
 
 
-
-
     @GetMapping("/user-info")
     override fun userInfoByToken(): JsonResult<UserTable> =
         userServiceImpl.userInfoByToken()
 
 
+    @GetMapping("/user-img", "/user-img/*", produces = [MediaType.IMAGE_PNG_VALUE])
+    override fun userImage(@RequestParam("c", required = false) c: String?): BufferedImage =
+        userServiceImpl.userImage(c)
 
 
     @PostMapping("/edit-img")
@@ -46,14 +47,10 @@ class UserController : BaseController(), IUserService {
     ): JsonResult<UserTable> = userServiceImpl.editImage(userImage)
 
 
-
-
     @GetMapping("/edit-name")
     override fun editName(
         @RequestParam("name", required = false) userName: String?
     ): JsonResult<UserTable> = userServiceImpl.editName(userName)
-
-
 
 
     @GetMapping("/edit-sex")
@@ -62,14 +59,10 @@ class UserController : BaseController(), IUserService {
     ): JsonResult<UserTable> = userServiceImpl.editSex(userSex)
 
 
-
-
     @GetMapping("/edit-birth")
     override fun editBirth(
         @RequestParam("birth", required = false) userBirth: String?
     ): JsonResult<UserTable> = userServiceImpl.editBirth(userBirth)
-
-
 
 
     @GetMapping("/edit-ird")
@@ -78,14 +71,10 @@ class UserController : BaseController(), IUserService {
     ): JsonResult<UserTable> = userServiceImpl.editIntroduce(userIntroduce)
 
 
-
-
     @GetMapping("/edit-unit")
     override fun editUnit(
         @RequestParam("unit", required = false) userUnit: String?
     ): JsonResult<UserTable> = userServiceImpl.editUnit(userUnit)
-
-
 
 
     @PostMapping("/edit-password")

@@ -27,12 +27,11 @@ class PictureController : BaseController(), IPictureService {
     private lateinit var pictureServiceImpl: PictureServiceImpl
 
 
-    @GetMapping("/{imageName}", "/", produces = [MediaType.IMAGE_JPEG_VALUE])
+    @GetMapping("/{imageName}", "/", produces = [MediaType.IMAGE_PNG_VALUE])
     override fun requestImage(
         @PathVariable("imageName", required = false) pictureMd5: String?,
-        @RequestParam("c", required = false) c: String?,
-        response: HttpServletResponse
-    ): BufferedImage = pictureServiceImpl.requestImage(pictureMd5, c, response)
+        @RequestParam("c", required = false) c: String?
+    ): BufferedImage = pictureServiceImpl.requestImage(pictureMd5, c)
 
 
     @PostMapping("/up-img")

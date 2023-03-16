@@ -1,8 +1,9 @@
 package com.mayunfeng.join.service
 
 import com.mayunfeng.join.utils.JsonResult
+import java.util.Arrays
 
-interface ITestService {
+interface IPublicService {
 
 
     /**
@@ -24,4 +25,9 @@ interface ITestService {
      */
     fun testToken(token: String?): JsonResult<Boolean>
 
+
+    /**
+     * 获取group type
+     */
+    fun getGroupType(): JsonResult<Array<String>>
 }

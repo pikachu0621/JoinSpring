@@ -2,18 +2,13 @@ package com.mayunfeng.join.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.util.DigestUtils
-import org.springframework.util.MultiValueMap
-import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.util.UriComponentsBuilder
-import java.awt.Color
-import java.awt.image.BufferedImage
 import java.io.*
 import java.sql.Timestamp
 import java.util.regex.Pattern
-import javax.imageio.ImageIO
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.random.Random
-import kotlin.reflect.typeOf
 
 object OtherUtils {
 
@@ -82,6 +77,18 @@ object OtherUtils {
         return DigestUtils.md5DigestAsHex(("configSalt=${salt}&t=$t&r=$r$valueStr").toByteArray())
     }
 
+
+    /**
+     * 创建 时间MD5 - 8
+     */
+    fun createTimeMd5(): String {
+        val t = (Timestamp(System.currentTimeMillis()).time / 1000).toString()
+        val r = Random.nextInt(100001, 200000).toString()
+        return DigestUtils.md5DigestAsHex(("t=$t&r=$r").toByteArray()).substring(8, 16)
+    }
+
+
+
     /**
      * 创建 加密时间
      * @param isForever == true 为永久  默认  false
@@ -138,6 +145,48 @@ object OtherUtils {
         } finally {
             writer?.close()
         }
+    }
+
+
+    /**
+     * 获取 请求头 或 参数上必须的参数
+     *
+     */
+    fun getMustParameter(request: HttpServletRequest, k: String): String? {
+        var token = request.getParameter(k)
+        if(isFieldEmpty(token)){
+            token = request.getHeader(k)
+        }
+        return token
+    }
+
+
+
+    /**
+     * 获取请求客户真实IP
+     */
+    fun getRemoteIP(request: HttpServletRequest): String? {
+        return if (request.getHeader("x-forwarded-for") == null) {
+            request.remoteAddr
+        } else request.getHeader("x-forwarded-for")
+    }
+
+
+    /**
+     * 获取请求客户真实IP
+     */
+    fun getRemoteHost(request: HttpServletRequest): String? {
+        var ip = request.getHeader("x-forwarded-for")
+        if (ip.isNullOrEmpty() || "unknown".equals(ip, ignoreCase = true)) {
+            ip = request.getHeader("Proxy-Client-IP")
+        }
+        if (ip.isNullOrEmpty() || "unknown".equals(ip, ignoreCase = true)) {
+            ip = request.getHeader("WL-Proxy-Client-IP")
+        }
+        if (ip.isNullOrEmpty() || "unknown".equals(ip, ignoreCase = true)) {
+            ip = request.remoteAddr
+        }
+        return if (ip == "0:0:0:0:0:0:0:1") "127.0.0.1" else ip
     }
 
 
