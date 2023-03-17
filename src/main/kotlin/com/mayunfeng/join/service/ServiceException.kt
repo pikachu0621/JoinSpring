@@ -36,6 +36,8 @@ class FileSendTypeException : BaseServiceException(-605, "文件上传失败,格
 class GroupNameLengthException : BaseServiceException(-701, "名字长度请保持在 (1~20)")
 class GroupIrdLengthException : BaseServiceException(-702, "介绍长度请保持在 (1~100)")
 class GroupTypeException : BaseServiceException(-703, "此类型不存在")
+class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没有操作权限")
+class GroupNulException : BaseServiceException(-705, "此组不存在")
 
 
 

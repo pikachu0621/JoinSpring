@@ -22,12 +22,27 @@ class GroupController:  BaseController(), IGroupService{
     @PostMapping("/create")
     @ResponseBody
     override fun createGroup(
-        @RequestParam("img", required = true) img: MultipartFile?,
-        @RequestParam("name", required = true) name: String?,
-        @RequestParam("type", required = true) type: String?,
-        @RequestParam("ird", required = true) ird: String?):
+        @RequestParam("img", required = false) img: MultipartFile?,
+        @RequestParam("name", required = false) name: String?,
+        @RequestParam("type", required = false) type: String?,
+        @RequestParam("ird", required = false) ird: String?):
             JsonResult<GroupTable>  = groupServiceImpl.createGroup(img, name, type, ird)
 
     @GetMapping("/user-create-group")
     override fun userCreateGroup(): JsonResult<Array<GroupTable>> = groupServiceImpl.userCreateGroup()
+
+
+    @GetMapping("/delete-group/{id}", "/delete-group/**")
+    override fun deleteUserGroup(@PathVariable("id", required = false) id: Long?): JsonResult<Array<GroupTable>> = groupServiceImpl.deleteUserGroup(id)
+
+
+    @PostMapping("/edit-group")
+    @ResponseBody
+    override fun editUserGroup(
+        @RequestParam("id", required = true)  id: Long?,
+        @RequestParam("img", required = false) img: MultipartFile?,
+        @RequestParam("name", required = false) name: String?,
+        @RequestParam("type", required = false) type: String?,
+        @RequestParam("ird", required = false) ird: String?
+    ): JsonResult<GroupTable>  = groupServiceImpl.editUserGroup(id, img, name, type, ird)
 }

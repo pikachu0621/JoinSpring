@@ -1,5 +1,6 @@
 package com.mayunfeng.join.service.impl
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import com.mayunfeng.join.base.BaseServiceException
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
@@ -111,12 +112,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                     arrayOf(userImage)
                 ) {
                     // 删除只有本人绑定的图片数据
-                    val queryByFieldList = SqlUtils.queryByFieldList(userTableMapper, "user_img", it.userImg)
-                    if (!queryByFieldList.isNullOrEmpty()) {
-                        if(queryByFieldList.size <= 1){
-                            File("${APPConfig.configUserImageFilePath()}${it.userImg}").delete()
-                        }
-                    }
+                    SqlUtils.delImageFile(userTableMapper, "user_img", it.userImg, "${APPConfig.configUserImageFilePath()}${it.userImg}")
                     it.userImg = pictureServiceImpl.upImage(userImage).result!!
                 })
         )
@@ -207,6 +203,11 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                 })
         )
     }
+
+
+
+
+
 
 
     /**

@@ -2,6 +2,7 @@ package com.mayunfeng.join.utils
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
+import java.io.File
 
 object SqlUtils {
 
@@ -74,6 +75,25 @@ object SqlUtils {
         baseMapper.delete(QueryWrapper<t>().apply {
             eq(field, fieldValue)
         })
+    }
+
+
+    /**
+     * 删除未绑定的图片
+     *
+     */
+    fun <t> delImageFile(
+        baseMapper: BaseMapper<t>,
+        field: String,
+        fieldValue: Any,
+        filePath: String
+    ){
+        val queryByFieldList = SqlUtils.queryByFieldList(baseMapper, field, fieldValue)
+        if (!queryByFieldList.isNullOrEmpty()) {
+            if(queryByFieldList.size <= 1){
+                File(filePath).delete()
+            }
+        }
     }
 
 
