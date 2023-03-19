@@ -9,10 +9,12 @@ import java.io.Serializable
 /**
  * 用户创建的组表
  *
+ *  以后更新
+ *  可以加个密码  防止用户乱加入
  *
  */
 @TableName("myf_group_table")
-data class GroupTable(
+data class GroupTable @JvmOverloads constructor(
 
     @Column(
         comment = "用户ID-谁是创建的",
@@ -51,6 +53,15 @@ data class GroupTable(
 
     // 当前群里的人数
     @TableField(exist = false)
-    var groupPeople: Int = 0
+    var groupPeople: Int = 0,
+
+    // 当前群里前4名人的数据
+    @TableField(exist = false)
+    var groupTopFourPeople: List<UserTable> = arrayListOf(),
+
+    // 当前用户与此群的关系    0 未加入   1 加入不是组管理   2 加入是组管理
+    @TableField(exist = false)
+    var groupAndUser: Int = 0
+
 
 ): BaseTable(), Serializable

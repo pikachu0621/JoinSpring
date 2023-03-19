@@ -26,6 +26,7 @@ class StartContextTask : ApplicationContextAware, BaseCls() {
                 "|_____||_____| [\\_:  /    [___]   `.____.'    '.__.'  [___] [___||__]         )-)_/--( (        \n" +
                 "                \\__.'                                                         ''''  ''''        \n"
         )
+        // 图片时效加密算法
         AESBCBUtils.init(APPConfig.configImagePassword)
         // 创建用户数据文件夹   user/img  user/...
         createUserDir()

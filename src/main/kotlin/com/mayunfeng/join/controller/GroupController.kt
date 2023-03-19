@@ -45,4 +45,9 @@ class GroupController:  BaseController(), IGroupService{
         @RequestParam("type", required = false) type: String?,
         @RequestParam("ird", required = false) ird: String?
     ): JsonResult<GroupTable>  = groupServiceImpl.editUserGroup(id, img, name, type, ird)
+
+
+
+    @GetMapping("/query-group/{id}", "/query-group/**")
+    override fun queryGroupInfoById(@PathVariable("id", required = false) id: Long?): JsonResult<GroupTable> = groupServiceImpl.queryGroupInfoById(id)
 }

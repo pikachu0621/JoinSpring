@@ -40,4 +40,8 @@ class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没
 class GroupNulException : BaseServiceException(-705, "此组不存在")
 
 
+// 加入 group
+class JoinGroupOkException : BaseServiceException(-705, "您已加入该组，无需重复操作")
+class JoinGroupNoException : BaseServiceException(-705, "您未加入该组，无法进行此操作")
+
 

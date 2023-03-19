@@ -213,7 +213,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     /**
      * 过滤/处理 数据
      */
-    private fun disposeReturnUserData(userData: UserTable): UserTable {
+     fun disposeReturnUserData(userData: UserTable): UserTable {
         // 限制时间
         // 可以不加 userData.userImg 直接根据 用户token 获取   但是防止前端缓存 要加上
         if(userData.userImg == APPConfig.configDefaultPicName){
@@ -257,7 +257,6 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         userTableMapper.updateById(userData)
         return userData
     }
-
 
 }
 

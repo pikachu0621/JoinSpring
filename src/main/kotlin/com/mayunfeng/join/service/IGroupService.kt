@@ -25,12 +25,9 @@ interface IGroupService {
 
 
     /**
-     * 获取已创建的组
+     * 获取当前用户已创建的组
      * 需要token
      *
-     *
-     *
-     *  todo 创建用户加入表    人数还没完成
      */
     fun userCreateGroup(): JsonResult<Array<GroupTable>>
 
@@ -55,5 +52,27 @@ interface IGroupService {
      */
     fun editUserGroup(id: Long?, img: MultipartFile?, name: String?, type: String?, ird: String?): JsonResult<GroupTable>
 
+
+    /**
+     * 根据 组id 获取 数据
+     *
+     * @param id 组id
+     *
+     */
+    fun queryGroupInfoById(id: Long?): JsonResult<GroupTable>
+
+
+    /**
+     * todo  踢出本组的某个用户
+     *
+     * @param targetUserId 要踢出的目标用户Id
+     * @param  byGroupId 踢出那个组
+     *
+     *
+     */
+    fun comeOutUserByGroup(targetUserId: Long, byGroupId: Long){
+
+
+    }
 
 }
