@@ -14,6 +14,7 @@ class UserPasswordLengthException : BaseServiceException(-103, "密码长度请�
 class UserAccountLengthException : BaseServiceException(-104, "账号长度请保持在 (6~12)")
 class UserOldPasswordException : BaseServiceException(-105, "旧密码错误")
 class UserEquallyPasswordException : BaseServiceException(-106, "新密码不能与旧密码相同")
+class UserNulException : BaseServiceException(-107, "此用户不存在")
 
 
 
@@ -38,10 +39,12 @@ class GroupIrdLengthException : BaseServiceException(-702, "介绍长度请保�
 class GroupTypeException : BaseServiceException(-703, "此类型不存在")
 class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没有操作权限")
 class GroupNulException : BaseServiceException(-705, "此组不存在")
+class GroupByToMyException : BaseServiceException(-706, "不能自己踢自己")
 
 
 // 加入 group
-class JoinGroupOkException : BaseServiceException(-705, "您已加入该组，无需重复操作")
-class JoinGroupNoException : BaseServiceException(-705, "您未加入该组，无法进行此操作")
+class JoinGroupOkException : BaseServiceException(-801, "您已加入该组，无需重复操作")
+class JoinGroupNoException : BaseServiceException(-802, "您未加入该组，无法进行此操作")
+
 
 

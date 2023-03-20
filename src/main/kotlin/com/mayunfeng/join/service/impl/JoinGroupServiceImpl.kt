@@ -8,6 +8,7 @@ import com.mayunfeng.join.mapper.JoinGroupTableMapper
 import com.mayunfeng.join.mapper.UserTableMapper
 import com.mayunfeng.join.model.GroupTable
 import com.mayunfeng.join.model.JoinGroupTable
+import com.mayunfeng.join.model.LGroupBean
 import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
@@ -90,16 +91,19 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
     }
 
 
-    override fun queryJoinGroupAllUser(groupId: Long?): JsonResult<Array<UserTable>> {
+    override fun queryJoinGroupAllUser(groupId: Long?): JsonResult<LGroupBean<Array<UserTable>>> {
         if (OtherUtils.isFieldEmpty(groupId)) throw ParameterException()
-        groupTableMapper.selectById(groupId) ?: throw GroupNulException()
+        val groupTable = groupTableMapper.selectById(groupId) ?: throw GroupNulException()
         val queryByFieldList = SqlUtils.queryByFieldList(joinGroupTableMapper, "group_id", groupId!!)
-        if (queryByFieldList.isNullOrEmpty()) return JsonResult.ok(arrayOf())
+        if (queryByFieldList.isNullOrEmpty()) return JsonResult.ok(LGroupBean(false, arrayOf()))
         val arr = arrayListOf<UserTable>()
         queryByFieldList.forEach {
             arr.add(userServiceImpl.disposeReturnUserData(userTableMapper.selectById(it.userId)))
         }
-        return JsonResult.ok(arr.toTypedArray())
+        // 判断否为创建者
+        val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
+        val userId = tokenServiceImpl.queryByToken(token)!!.userId
+        return JsonResult.ok(LGroupBean( groupTable.userId == userId , arr.asReversed().toTypedArray()))
     }
 
 
@@ -117,12 +121,14 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
     override fun queryJoinTopFourPeople(groupId: Long): List<UserTable> {
         val usTabs = arrayListOf<UserTable>()
         groupTableMapper.selectById(groupId) ?: return usTabs
-        val joinGroups = SqlUtils.queryByFieldList(joinGroupTableMapper, "group_id", groupId)
+        var joinGroups = SqlUtils.queryByFieldList(joinGroupTableMapper, "group_id", groupId)
         if (joinGroups.isNullOrEmpty()) return usTabs
-        joinGroups.forEachIndexed { i, it ->
-            usTabs.add(userServiceImpl.disposeReturnUserData(userTableMapper.selectById(it.userId)))
-            if (i > 3) return@forEachIndexed
+        joinGroups = joinGroups.asReversed()
+        for (i in joinGroups.indices){
+            usTabs.add(userServiceImpl.disposeReturnUserData(userTableMapper.selectById(joinGroups[i].userId)))
+            if (i >= 3) break
         }
+
         return usTabs
     }
 
@@ -130,13 +136,16 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
 
     // 用户是否已加入该组
     // true 加入
-    override fun verifyJoinGroupByUserId(groupId: Long): Boolean{
+    override fun verifyJoinGroupByUserId(groupId: Long, userId: Long): Boolean {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
-        val userId = tokenServiceImpl.queryByToken(token)!!.userId
+        var userIdTow = userId
+        if (userIdTow == -1L){
+            userIdTow = tokenServiceImpl.queryByToken(token)!!.userId
+        }
         val selectList = joinGroupTableMapper.selectList(QueryWrapper<JoinGroupTable>().apply {
             allEq(hashMapOf<String, Any>().apply {
                 put("group_id", groupId)
-                put("user_id", userId)
+                put("user_id", userIdTow)
             })
         })
         return !selectList.isNullOrEmpty()

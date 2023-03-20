@@ -1,7 +1,6 @@
 package com.mayunfeng.join.service.impl
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
-import com.mayunfeng.join.base.BaseServiceException
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER
@@ -10,6 +9,7 @@ import com.mayunfeng.join.mapper.JoinGroupTableMapper
 import com.mayunfeng.join.mapper.UserTableMapper
 import com.mayunfeng.join.model.GroupTable
 import com.mayunfeng.join.model.JoinGroupTable
+import com.mayunfeng.join.model.LGroupBean
 import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
@@ -18,7 +18,6 @@ import com.mayunfeng.join.utils.SqlUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
 import javax.servlet.http.HttpServletRequest
 
 
@@ -79,12 +78,13 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         return JsonResult.ok(readUserListGroup(userId))
     }
 
-    // 删除所有加入此组的用户记录
+
     override fun deleteUserGroup(id: Long?): JsonResult<Array<GroupTable>> {
         if( OtherUtils.isFieldEmpty(id)) throw ParameterException()
         val userId = verifyGroup(id!!)
         val groupTable = groupTableMapper.selectById(id)
         SqlUtils.delImageFile(groupTableMapper, "group_img", groupTable.groupImg, "${APPConfig.configUserImageFilePath()}${groupTable.groupImg}")
+        // 删除所有加入此组的用户记录
         joinGroupTableMapper.delete(QueryWrapper<JoinGroupTable>().apply{
             eq("group_id", id)
         })
@@ -122,13 +122,24 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
 
     override fun queryGroupInfoById(id: Long?): JsonResult<GroupTable> {
         if (OtherUtils.isFieldEmpty(id)) throw ParameterException()
-        verifyGroup(id!!)
         val groupTable = groupTableMapper.selectById(id) ?: throw GroupNulException()
         return JsonResult.ok(disposeReturnData(groupTable))
     }
 
-
-
+    override fun comeOutUserByGroup(targetUserId: Long?, byGroupId: Long?): JsonResult<LGroupBean<Array<UserTable>>> {
+        if( OtherUtils.isFieldEmpty(targetUserId, byGroupId)) throw ParameterException()
+        val userId = verifyGroup(byGroupId!!)
+        if (targetUserId == userId) throw GroupByToMyException()
+        userTableMapper.selectById(targetUserId) ?: throw UserNulException()
+        if (!joinGroupServiceImpl.verifyJoinGroupByUserId(byGroupId, targetUserId!!))  throw JoinGroupNoException()
+        joinGroupTableMapper.delete(QueryWrapper<JoinGroupTable>().apply {
+            allEq(hashMapOf<String, Any>().apply {
+                put("group_id", byGroupId)
+                put("user_id", targetUserId)
+            })
+        })
+        return joinGroupServiceImpl.queryJoinGroupAllUser(byGroupId)
+    }
 
 
     /**
@@ -144,10 +155,12 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     /**
      * 验证该用户 是否有该组操作权限
      *
+     *  @param  groupId
+     *
      * 返回 user id
      */
-    fun verifyGroup(id: Long): Long{
-        val groupTable = groupTableMapper.selectById(id) ?: throw GroupNulException()
+    fun verifyGroup(groupId: Long): Long{
+        val groupTable = groupTableMapper.selectById(groupId) ?: throw GroupNulException()
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
         if (groupTable.userId != userId) throw GroupUserAuthorityEditException()

@@ -2,6 +2,7 @@ package com.mayunfeng.join.controller
 
 import com.mayunfeng.join.base.BaseController
 import com.mayunfeng.join.model.GroupTable
+import com.mayunfeng.join.model.LGroupBean
 import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.IJoinGroupService
 import com.mayunfeng.join.service.impl.JoinGroupServiceImpl
@@ -39,11 +40,11 @@ class JoinGroupController : BaseController(), IJoinGroupService {
             "groupId",
             required = false
         ) groupId: Long?
-    ): JsonResult<Array<UserTable>> = joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
+    ): JsonResult<LGroupBean<Array<UserTable>>> = joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
 
 
 
     override fun getJoinUserNum(groupId: Long): Int = 0
     override fun queryJoinTopFourPeople(groupId: Long): List<UserTable> = arrayListOf()
-    override fun verifyJoinGroupByUserId(groupId: Long): Boolean = false
+    override fun verifyJoinGroupByUserId(groupId: Long, userId: Long): Boolean = false
 }

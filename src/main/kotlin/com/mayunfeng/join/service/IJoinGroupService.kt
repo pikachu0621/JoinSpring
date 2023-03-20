@@ -1,6 +1,7 @@
 package com.mayunfeng.join.service
 
 import com.mayunfeng.join.model.GroupTable
+import com.mayunfeng.join.model.LGroupBean
 import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.utils.JsonResult
 
@@ -8,7 +9,7 @@ interface IJoinGroupService {
 
 
     /**
-     * todo  加入某个组
+     * 加入某个组
      *
      * 需要 token
      *
@@ -17,7 +18,7 @@ interface IJoinGroupService {
 
 
     /**
-     * todo  退出某个组
+     * 退出某个组
      *
      * 需要 token
      *
@@ -26,7 +27,7 @@ interface IJoinGroupService {
 
 
     /**
-     * todo 获取我加入的组
+     * 获取我加入的组
      * 需要 token
      *
      */
@@ -34,14 +35,14 @@ interface IJoinGroupService {
 
 
     /**
-     * todo 获取某个组所有用户
+     * 获取某个组所有用户
      *
      */
-    fun queryJoinGroupAllUser(groupId : Long?): JsonResult<Array<UserTable>>
+    fun queryJoinGroupAllUser(groupId : Long?):  JsonResult<LGroupBean<Array<UserTable>>>
 
 
     /**
-     * todo  获取加入 该组的总人数
+     * 获取加入 该组的总人数
      * 不开放 该方法API
      *
      */
@@ -50,7 +51,7 @@ interface IJoinGroupService {
 
 
     /**
-     * todo 获取加入该组的前4名用户
+     * 获取加入该组的前4名用户
      * 不开放 该方法API
      *
      */
@@ -58,12 +59,13 @@ interface IJoinGroupService {
 
 
     /**
-     * todo 验证用户是否加入该组
+     * 验证用户是否加入该组
      * 不开放 该方法API
+     * @param userId  -1 获取token里的userId
      *  true   加入
      *  false  未加入
      */
-    fun verifyJoinGroupByUserId(groupId: Long): Boolean
+    fun verifyJoinGroupByUserId(groupId: Long, userId: Long = -1): Boolean
 
 
 

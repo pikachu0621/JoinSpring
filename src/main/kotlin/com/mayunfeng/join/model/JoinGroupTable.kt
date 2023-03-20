@@ -27,3 +27,10 @@ data class JoinGroupTable (
     var groupAdministrator: Boolean = false,
 
 ): BaseTable(), Serializable
+
+
+data class LGroupBean<T>(
+    // 是否为此组创建者
+    val groupUserIsFounder: Boolean = false,
+    var result: T?
+): Serializable

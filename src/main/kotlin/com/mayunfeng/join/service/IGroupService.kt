@@ -1,9 +1,10 @@
 package com.mayunfeng.join.service
 
 import com.mayunfeng.join.model.GroupTable
+import com.mayunfeng.join.model.LGroupBean
+import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.utils.JsonResult
 import org.springframework.web.multipart.MultipartFile
-import java.awt.image.BufferedImage
 
 
 /**
@@ -63,16 +64,24 @@ interface IGroupService {
 
 
     /**
-     * todo  踢出本组的某个用户
+     *  踢出本组的某个用户
      *
      * @param targetUserId 要踢出的目标用户Id
      * @param  byGroupId 踢出那个组
      *
      *
      */
-    fun comeOutUserByGroup(targetUserId: Long, byGroupId: Long){
+    fun comeOutUserByGroup(targetUserId: Long?, byGroupId: Long?): JsonResult<LGroupBean<Array<UserTable>>>
 
 
+    /**
+     * todo 根据组名查询 组
+     * 模糊查询
+     *
+     */
+    fun queryGroupByName(groupName: String?): JsonResult<Array<GroupTable>>{
+        return JsonResult.ok(null)
     }
+
 
 }

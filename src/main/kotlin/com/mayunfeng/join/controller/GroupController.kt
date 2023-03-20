@@ -2,6 +2,8 @@ package com.mayunfeng.join.controller
 
 import com.mayunfeng.join.base.BaseController
 import com.mayunfeng.join.model.GroupTable
+import com.mayunfeng.join.model.LGroupBean
+import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.IGroupService
 import com.mayunfeng.join.service.impl.GroupServiceImpl
 import com.mayunfeng.join.utils.JsonResult
@@ -50,4 +52,11 @@ class GroupController:  BaseController(), IGroupService{
 
     @GetMapping("/query-group/{id}", "/query-group/**")
     override fun queryGroupInfoById(@PathVariable("id", required = false) id: Long?): JsonResult<GroupTable> = groupServiceImpl.queryGroupInfoById(id)
+
+
+    @GetMapping("/remove-user-group")
+    override fun comeOutUserByGroup(
+        @RequestParam("user-id", required = false) targetUserId: Long?,
+        @RequestParam("group-id", required = false) byGroupId: Long?
+    ): JsonResult<LGroupBean<Array<UserTable>>> = groupServiceImpl.comeOutUserByGroup(targetUserId, byGroupId)
 }
