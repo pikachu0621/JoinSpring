@@ -131,7 +131,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         val userId = verifyGroup(byGroupId!!)
         if (targetUserId == userId) throw GroupByToMyException()
         userTableMapper.selectById(targetUserId) ?: throw UserNulException()
-        if (!joinGroupServiceImpl.verifyJoinGroupByUserId(byGroupId, targetUserId!!))  throw JoinGroupNoException()
+        if (!joinGroupServiceImpl.verifyJoinGroupByUserId(byGroupId, targetUserId!!))  throw GroupUserNotJoinException()
         joinGroupTableMapper.delete(QueryWrapper<JoinGroupTable>().apply {
             allEq(hashMapOf<String, Any>().apply {
                 put("group_id", byGroupId)
@@ -139,6 +139,14 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
             })
         })
         return joinGroupServiceImpl.queryJoinGroupAllUser(byGroupId)
+    }
+
+
+    override fun queryGroupByName(groupNameAndGroupId: String?): JsonResult<Array<GroupTable>> {
+        if( OtherUtils.isFieldEmpty(groupNameAndGroupId)) throw ParameterException()
+        val arrayListOf = arrayListOf<GroupTable>()
+        groupTableMapper.queryLikeGroup(groupNameAndGroupId!!)?.let { arrayListOf.addAll(it) }
+        return JsonResult.ok(disposeReturnData(arrayListOf.toTypedArray()))
     }
 
 
@@ -181,6 +189,14 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     }
 
 
+
+    private fun disposeReturnData(groupTable: Array<GroupTable>): Array<GroupTable> {
+        val arrayListOf = arrayListOf<GroupTable>()
+        groupTable.forEach {
+            arrayListOf.add(disposeReturnData(it))
+        }
+        return arrayListOf.toTypedArray()
+    }
 
 
     /**

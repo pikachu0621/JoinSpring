@@ -21,7 +21,7 @@ class HttpWebInterceptor: HandlerInterceptor,  BaseCls() {
 
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        // 这里 header 和 get 参数都可以
+        // 这里 header 和 get 参数都可以 拦截未授权用户
         val token: String? = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)
         logi("------ 开始请求：[IP:${OtherUtils.getRemoteIP(request)}]-[token:$token]-[路径:${request.servletPath}]")
 

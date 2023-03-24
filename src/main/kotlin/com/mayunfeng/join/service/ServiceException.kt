@@ -40,6 +40,7 @@ class GroupTypeException : BaseServiceException(-703, "此类型不存在")
 class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没有操作权限")
 class GroupNulException : BaseServiceException(-705, "此组不存在")
 class GroupByToMyException : BaseServiceException(-706, "不能自己踢自己")
+class GroupUserNotJoinException : BaseServiceException(-707, "该用户未加入此组，无法操作")
 
 
 // 加入 group

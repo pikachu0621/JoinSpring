@@ -1,7 +1,5 @@
 package com.mayunfeng.join.service.impl
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper
-import com.mayunfeng.join.base.BaseServiceException
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER
@@ -17,10 +15,8 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.awt.image.BufferedImage
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.annotation.Resource
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 
@@ -87,10 +83,18 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
 
 
 
-    override fun userImage(c: String?): BufferedImage {
+    override fun userImage(c: String?, userId: Long?): BufferedImage {
+        var userBen: UserTable?
         val tokenBen = tokenServiceImpl.queryByToken(OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!)
-        val userBen = userTableMapper.selectById(tokenBen!!.userId)
-        return if(userBen.userImg == APPConfig.configDefaultPicName ){
+        userBen = if (userId != null && userId != -1L){
+            userTableMapper.selectById(userId)
+        } else {
+            userTableMapper.selectById(tokenBen!!.userId)
+        }
+        if (userBen == null){
+            userBen = userTableMapper.selectById(tokenBen!!.userId)
+        }
+        return if(userBen!!.userImg == APPConfig.configDefaultPicName ){
             if (userBen.userSex!!)
                 ImageIO.read(resourceLoader.getResource(APPConfig.configDefaultPicBoy).inputStream)
             else
@@ -212,8 +216,11 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
 
     /**
      * 过滤/处理 数据
+     *
+     * @param isAddUserId 是否添加 userid  用在不是当前用户查询别的用户头像
+     *
      */
-     fun disposeReturnUserData(userData: UserTable): UserTable {
+     fun disposeReturnUserData(userData: UserTable, isAddUserId: Boolean = false): UserTable {
         // 限制时间
         // 可以不加 userData.userImg 直接根据 用户token 获取   但是防止前端缓存 要加上
         if(userData.userImg == APPConfig.configDefaultPicName){
@@ -227,9 +234,10 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
             if (APPConfig.configImageTime != -1L) {
                 val createTimeAESBCB = OtherUtils.createTimeAESBCB(APPConfig.configSalt)
                 "?c=$createTimeAESBCB"
-            } else {
-                ""
-            }
+            } else ""
+        }${
+            if (APPConfig.configImageTime != -1L) if (isAddUserId) "&uid=${userData.id}" else ""
+            else if (isAddUserId) "?uid=${userData.id}" else ""
         }"
         userData.userAge = TimeUtils.getDateDistanceYear(
             userData.userBirth,

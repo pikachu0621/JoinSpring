@@ -94,16 +94,16 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
     override fun queryJoinGroupAllUser(groupId: Long?): JsonResult<LGroupBean<Array<UserTable>>> {
         if (OtherUtils.isFieldEmpty(groupId)) throw ParameterException()
         val groupTable = groupTableMapper.selectById(groupId) ?: throw GroupNulException()
-        val queryByFieldList = SqlUtils.queryByFieldList(joinGroupTableMapper, "group_id", groupId!!)
+        val queryByFieldList = joinGroupTableMapper.queryAllJoinGroupUser(groupId!!)
         if (queryByFieldList.isNullOrEmpty()) return JsonResult.ok(LGroupBean(false, arrayOf()))
         val arr = arrayListOf<UserTable>()
         queryByFieldList.forEach {
-            arr.add(userServiceImpl.disposeReturnUserData(userTableMapper.selectById(it.userId)))
+            arr.add(userServiceImpl.disposeReturnUserData(userTableMapper.selectById(it.userId), true))
         }
         // 判断否为创建者
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
-        return JsonResult.ok(LGroupBean( groupTable.userId == userId , arr.asReversed().toTypedArray()))
+        return JsonResult.ok(LGroupBean( groupTable.userId == userId , arr.toTypedArray()))
     }
 
 
@@ -121,14 +121,12 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
     override fun queryJoinTopFourPeople(groupId: Long): List<UserTable> {
         val usTabs = arrayListOf<UserTable>()
         groupTableMapper.selectById(groupId) ?: return usTabs
-        var joinGroups = SqlUtils.queryByFieldList(joinGroupTableMapper, "group_id", groupId)
+        val joinGroups = joinGroupTableMapper.queryAllJoinGroupUser(groupId)
         if (joinGroups.isNullOrEmpty()) return usTabs
-        joinGroups = joinGroups.asReversed()
         for (i in joinGroups.indices){
-            usTabs.add(userServiceImpl.disposeReturnUserData(userTableMapper.selectById(joinGroups[i].userId)))
+            usTabs.add(userServiceImpl.disposeReturnUserData(userTableMapper.selectById(joinGroups[i].userId), true))
             if (i >= 3) break
         }
-
         return usTabs
     }
 

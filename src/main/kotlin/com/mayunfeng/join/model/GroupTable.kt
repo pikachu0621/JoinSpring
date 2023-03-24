@@ -3,7 +3,11 @@ package com.mayunfeng.join.model
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
+import com.gitee.sunchenbin.mybatis.actable.annotation.TableCharset
+import com.gitee.sunchenbin.mybatis.actable.annotation.TableComment
+import com.gitee.sunchenbin.mybatis.actable.annotation.TableEngine
 import java.io.Serializable
+import javax.persistence.TableGenerator
 
 
 /**

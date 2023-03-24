@@ -1,5 +1,6 @@
 package com.mayunfeng.join.task
 
+import com.baomidou.mybatisplus.extension.toolkit.SqlRunner
 import com.mayunfeng.join.base.BaseCls
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.utils.AESBCBUtils
@@ -30,6 +31,7 @@ class StartContextTask : ApplicationContextAware, BaseCls() {
         AESBCBUtils.init(APPConfig.configImagePassword)
         // 创建用户数据文件夹   user/img  user/...
         createUserDir()
+        /*alter TABLE users AUTO_INCREMENT=1000;*/
     }
 
     fun createUserDir(){

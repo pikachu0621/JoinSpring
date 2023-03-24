@@ -36,8 +36,11 @@ class UserController : BaseController(), IUserService {
 
 
     @GetMapping("/user-img", "/user-img/*", produces = [MediaType.IMAGE_PNG_VALUE])
-    override fun userImage(@RequestParam("c", required = false) c: String?): BufferedImage =
-        userServiceImpl.userImage(c)
+    override fun userImage(
+        @RequestParam("c", required = false) c: String?,
+        @RequestParam("uid", required = false) userId: Long?
+    ): BufferedImage =
+        userServiceImpl.userImage(c, userId)
 
 
     @PostMapping("/edit-img")

@@ -75,13 +75,11 @@ interface IGroupService {
 
 
     /**
-     * todo 根据组名查询 组
+     * 根据组名查询 组
      * 模糊查询
      *
      */
-    fun queryGroupByName(groupName: String?): JsonResult<Array<GroupTable>>{
-        return JsonResult.ok(null)
-    }
+    fun queryGroupByName(groupNameAndGroupId: String?): JsonResult<Array<GroupTable>>
 
 
 }

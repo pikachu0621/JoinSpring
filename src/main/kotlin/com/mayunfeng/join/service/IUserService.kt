@@ -33,7 +33,7 @@ interface IUserService {
      * @param c 时效AES 可空
      *
      */
-    fun userImage(c: String?): BufferedImage
+    fun userImage(c: String?, userId: Long? = -1L): BufferedImage
 
 
 
