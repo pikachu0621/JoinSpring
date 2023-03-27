@@ -14,9 +14,11 @@ import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
+import com.mayunfeng.join.utils.OtherUtils.isNumber
 import com.mayunfeng.join.utils.SqlUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import javax.servlet.http.HttpServletRequest
 
@@ -145,7 +147,8 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     override fun queryGroupByName(groupNameAndGroupId: String?): JsonResult<Array<GroupTable>> {
         if( OtherUtils.isFieldEmpty(groupNameAndGroupId)) throw ParameterException()
         val arrayListOf = arrayListOf<GroupTable>()
-        groupTableMapper.queryLikeGroup(groupNameAndGroupId!!)?.let { arrayListOf.addAll(it) }
+        val groupId = groupNameAndGroupId!!.isNumber()
+        groupTableMapper.queryLikeGroup(groupId, groupNameAndGroupId)?.let { arrayListOf.addAll(it) }
         return JsonResult.ok(disposeReturnData(arrayListOf.toTypedArray()))
     }
 

@@ -82,4 +82,16 @@ interface IGroupService {
     fun queryGroupByName(groupNameAndGroupId: String?): JsonResult<Array<GroupTable>>
 
 
+    /**
+     * todo 面对面加组
+     * 发起组的 经纬度 密码
+     * 有效时间为 3min
+     * 如果该范围有同样密码的组 则 让用户重新输入
+     *
+     *
+     */
+    fun faceToFaceAddGroup(longitude: Long, latitude: Long, password: Long){
+
+    }
+
 }

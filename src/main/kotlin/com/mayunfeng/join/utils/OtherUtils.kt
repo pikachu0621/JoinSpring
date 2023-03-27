@@ -26,6 +26,14 @@ object OtherUtils {
         return false
     }
 
+
+    fun String.isNumber(): Long = try {
+        this.toLong()
+    } catch (e: NumberFormatException) {
+        e.printStackTrace()
+        -1L
+    }
+
     /**
      * 是否包含违法字符  true 包含
      */

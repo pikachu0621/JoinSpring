@@ -2,89 +2,7 @@
 API 文档
 =====
 
-###>1. 登录API
-HTTP 方法：`POST`
-<br>
-请求 URL：`/myf-user-api/login-user`
-<br>
-参数提交类型：`Body -> form-data`
-<br>
-请求参数：
-
-|    参数    | 是否必选 |   类型   | 可选值范围 |  说明  |
-|:--------:|:----:|:------:|:-----:|:----:|
-| account  |  是   | string |   -   | 用户账号 |
-| password |  是   | string |   -   | 用户密码 |
-
-返回示例：
-```json
-{
-    "reason": "ok",
-    "error_code": 200,
-    "result": {
-        "userAccount": "123456",
-        "userPassword": "123456",
-        "userImg": "default_user_img.png",
-        "userSex": false,
-        "userName": "x-x-x",
-        "userUnit": "x-x-x-x",
-        "userAge": 0,
-        "userIntroduce": "这个家伙很懒，什么都没留下 >_<",
-        "userGrade": 0,
-        "userLimit": false,
-        "loginToken": "9ed1c12f7ff112c76f4f6e38e15c78b1",
-        "id": 1,
-        "createTime": "2023-03-08 22:02:03",
-        "updateTime": "2023-03-08 22:02:03",
-        "baseTag": null
-    }
-}
-```
-
-
-
-###>2. 获取签到历史记录API
-HTTP 方法：`GET`
-<br>
-请求 URL：`/myf-user-api/history-record`
-<br>
-参数提交类型：`Params`                           
-<br>
-请求参数：
-
-|     参数     | 是否必选 |   类型   | 可选值范围 |   说明    |
-|:----------:|:----:|:------:|:-----:|:-------:|
-| loginToken |  是   | string |   -   | 登录token |
-
-返回示例：
-```json
-{
-    "reason": "ok",
-    "error_code": 200,
-    "result": {
-        "userAccount": "123456",
-        "userPassword": "123456",
-        "userImg": "default_user_img.png",
-        "userSex": false,
-        "userName": "x-x-x",
-        "userUnit": "x-x-x-x",
-        "userAge": 0,
-        "userIntroduce": "这个家伙很懒，什么都没留下 >_<",
-        "userGrade": 0,
-        "userLimit": false,
-        "loginToken": "9ed1c12f7ff112c76f4f6e38e15c78b1",
-        "id": 1,
-        "createTime": "2023-03-08 22:02:03",
-        "updateTime": "2023-03-08 22:02:03",
-        "baseTag": null
-    }
-}
-```
-
-
-
-
-
+https://console-docs.apipost.cn/preview/9e608885058d3ede/38f1d8c9f866c1c9
 
 
 
@@ -181,11 +99,14 @@ HTTP 方法：`GET`
 |:------------:|:------------------------------------:|
 |      id      |                  id                  | 
 |   user_id    |             用户ID-哪个用户发起的             | 
-|   group_id   |             组的ID-在哪个组发起              |
-|  sign_title  |                 组-标题                 | 
+|   group_id   |             组的ID-在哪个组发起的             |
+|  sign_title  |                签到-标题                 | 
 | sign_content |                  内容                  | 
 |  sign_type   | 签到类型- 0 无密码打卡 1 签到码打卡 2 二维码打卡 3 手势打卡 | 
-|   sign_key   |               签到key-密码               | 
+|   sign_key   |            签到key-密码 -1无密码            |
+|  sign_time   |              有效时长  -1永久              |
+|   sign_map   |            签到区域  -1无区域限制             |
+
 
 *myf_user_sign_table* 用户签到表
 ------------------------

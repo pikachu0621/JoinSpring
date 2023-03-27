@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component
 @Component
 interface GroupTableMapper : BaseMapper<GroupTable>{
 
-    @Select("SELECT * FROM myf_group_table WHERE id=\${groupIdOrGroupName} OR group_name LIKE '%\${groupIdOrGroupName}%' ORDER BY create_time \${order}")
-    fun queryLikeGroup(groupIdOrGroupName: String, order: String = "asc"): ArrayList<GroupTable>?
+    @Select("SELECT * FROM myf_group_table WHERE id=\${groupId} OR group_name LIKE '%\${groupName}%' ORDER BY create_time \${order}")
+    fun queryLikeGroup(groupId : Long = -1, groupName: String, order: String = "asc"): ArrayList<GroupTable>?
 
 
 }
