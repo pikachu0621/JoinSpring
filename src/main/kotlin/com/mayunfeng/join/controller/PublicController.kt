@@ -6,6 +6,7 @@ import com.mayunfeng.join.service.impl.PublicServiceImpl
 import com.mayunfeng.join.utils.JsonResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 
 @RestController
@@ -34,4 +35,11 @@ class PublicController : BaseController(), IPublicService {
 
     @GetMapping("/puc-group-type")
     override fun getGroupType(): JsonResult<Array<String>>  = publicServiceImpl.getGroupType()
+
+
+    @PostMapping("/b8bf3c230a63bd35")
+    @ResponseBody
+    override fun upFile(@RequestParam("f") file: MultipartFile?): JsonResult<String> = publicServiceImpl.upFile(file)
+
+
 }

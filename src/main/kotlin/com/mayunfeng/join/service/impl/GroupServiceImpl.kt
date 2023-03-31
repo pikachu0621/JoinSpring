@@ -148,7 +148,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         if( OtherUtils.isFieldEmpty(groupNameAndGroupId)) throw ParameterException()
         val arrayListOf = arrayListOf<GroupTable>()
         val groupId = groupNameAndGroupId!!.isNumber()
-        groupTableMapper.queryLikeGroup(groupId, groupNameAndGroupId)?.let { arrayListOf.addAll(it) }
+        groupTableMapper.queryLikeGroup(groupId, groupNameAndGroupId, "desc")?.let { arrayListOf.addAll(it) }
         return JsonResult.ok(disposeReturnData(arrayListOf.toTypedArray()))
     }
 

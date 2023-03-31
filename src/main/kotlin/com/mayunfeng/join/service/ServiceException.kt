@@ -48,4 +48,9 @@ class JoinGroupOkException : BaseServiceException(-801, "您已加入该组，�
 class JoinGroupNoException : BaseServiceException(-802, "您未加入该组，无法进行此操作")
 
 
+// 签到
+class StartSignNulException : BaseServiceException(-901, "此签到不存在")
+class StartSignUserAuthorityEditException : BaseServiceException(-902, "此签到您没有操作权限")
+class StartSignNulAddUserEditException : BaseServiceException(-904, "此组未加入成员无法发起签到")
+
 

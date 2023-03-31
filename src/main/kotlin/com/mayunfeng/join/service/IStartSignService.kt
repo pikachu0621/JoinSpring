@@ -29,13 +29,25 @@ interface IStartSignService {
 
 
     /**
+     * 获取已创建的签到信息
+     * 根据token user_id 获取
+     *
+     */
+    fun getSignAllInfoListByUserId(): JsonResult<Array<StartSignTable>>
+
+
+
+
+
+    /**
      * 删除我发起的签到
      * @param signId       signId
      *
      * 需要验证 Token 和是否此用户创建的签到
+     * 删除
      *
      */
-    fun delSign(signId: Long): JsonResult<String>
+    fun delSign(signId: Long): JsonResult<Array<StartSignTable>>
 
 
 

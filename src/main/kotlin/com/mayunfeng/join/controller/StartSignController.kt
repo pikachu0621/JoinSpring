@@ -43,6 +43,14 @@ class StartSignController : BaseController(), IStartSignService {
             signTime
         )
 
-    override fun delSign(signId: Long): JsonResult<String> = startSignServiceImpl.delSign(signId)
+    @GetMapping("/all-info")
+    override fun getSignAllInfoListByUserId(): JsonResult<Array<StartSignTable>> =
+        startSignServiceImpl.getSignAllInfoListByUserId()
+
+
+
+    @GetMapping("/delete-sign/{signId}", "/delete-sign/**")
+    override fun delSign(@PathVariable("signId", required = false) signId: Long): JsonResult<Array<StartSignTable>> =
+        startSignServiceImpl.delSign(signId)
 
 }

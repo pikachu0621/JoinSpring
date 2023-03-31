@@ -1,6 +1,8 @@
 package com.mayunfeng.join.model
 
+import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
 import java.io.Serializable
@@ -14,6 +16,7 @@ data class StartSignTable(
         isNull = false,
         defaultValue = "0"
     )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var userId: Long = 0,
 
     @Column(
@@ -62,7 +65,30 @@ data class StartSignTable(
         isNull = true,
         defaultValue = "-1"
     )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var signTime: Long? = -1,
+
+
+
+    @Column(
+        comment = "签到率 用于记录最后签到率(失效时)，动态生成会受退群影响",
+        isNull = false,
+        type = MySqlTypeConstant.INT,
+        length = 3,
+        defaultValue = "0"
+    )
+    var signRatio: Int = 0,
+
+
+
+    @Column(
+        comment = "是否过期",   // 1 过期   0 未过期
+        isNull = false,
+        type = MySqlTypeConstant.INT,
+        length = 1,
+        defaultValue = "0"
+    )
+    var signExpire: Boolean = false,
 
 
     @Column(
@@ -72,5 +98,21 @@ data class StartSignTable(
     )
     var signMap: String? = "-1",
 
+
+    @TableField(exist = false)
+    var signGroupInfo: GroupTable? = null,
+
+    // 已完成人数
+    @TableField(exist = false)
+    var signHaveCompletedPeople: Int = 0,
+
+    // 未完成人数
+    @TableField(exist = false)
+    var signNotCompletedPeople: Int = 0,
+
+
+    // 总人数
+    @TableField(exist = false)
+    var signAllPeople: Int = 0,
 
     ) : BaseTable(), Serializable
