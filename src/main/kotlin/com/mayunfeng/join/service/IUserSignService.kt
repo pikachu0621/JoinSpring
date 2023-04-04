@@ -31,23 +31,8 @@ interface IUserSignService {
     /**
      * 获取该用户当前签到任务
      *
-     *
-     *
      */
-    fun queryUserSign(): JsonResult<ArrayList<UserSignTable>>
-
-
-    /**
-     * 验证该用户是否有此签到
-     * 返回  userId
-     *
-     *
-     *
-     */
-    fun verifyUserSign(signId: Long): Long {
-
-        return 0
-    }
+    fun queryUserSign(): JsonResult<Array<UserSignTable>>
 
 
 
@@ -56,18 +41,14 @@ interface IUserSignService {
      * 通知用户签到（添加数据）
      *
      */
-    fun notifyUserSign(groupId: Long, signId: Long){
-
-    }
+    fun notifyUserSign(groupId: Long, signId: Long){ }
 
 
     /**
      * 根据 signId 删除数据
      *
      */
-    fun delUserSignBySign(signId: Long){
-
-    }
+    fun delUserSignBySign(signId: Long){ }
 
 
 

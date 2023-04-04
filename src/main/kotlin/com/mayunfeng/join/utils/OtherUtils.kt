@@ -1,9 +1,13 @@
 package com.mayunfeng.join.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.server.ServerHttpRequest
 import org.springframework.util.DigestUtils
 import org.springframework.web.util.UriComponentsBuilder
 import java.io.*
+import java.net.URI
 import java.sql.Timestamp
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
@@ -139,7 +143,7 @@ object OtherUtils {
         run: (writer: PrintWriter) -> Unit = {}
     ) {
         var writer: PrintWriter? = null
-        response.status = 200
+        response.status = HttpStatus.OK.value()
         response.apply {
             characterEncoding = "UTF-8"
             contentType = "application/json; charset=utf-8"
@@ -169,6 +173,21 @@ object OtherUtils {
     }
 
 
+    /**
+     * 获取 请求头 或 参数上必须的参数
+     *
+     */
+    fun getMustParameter(uri: URI?, httpHeaders: HttpHeaders, k: String): String? {
+        var token: String? = httpHeaders[k]?.component1()
+        if (token == null && uri != null){
+            if(uri.path.isNullOrEmpty()) return null
+            token = uri.path.substringAfterLast("/")
+        }
+        return token
+    }
+
+
+
 
     /**
      * 获取请求客户真实IP
@@ -179,6 +198,11 @@ object OtherUtils {
         } else request.getHeader("x-forwarded-for")
     }
 
+    fun getRemoteIP(request: ServerHttpRequest): String? {
+        return if (request.headers["x-forwarded-for"] == null) {
+            request.remoteAddress.hostString
+        } else request.headers["x-forwarded-for"].toString()
+    }
 
     /**
      * 获取请求客户真实IP

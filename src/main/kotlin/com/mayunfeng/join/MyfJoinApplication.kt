@@ -1,6 +1,6 @@
 package com.mayunfeng.join
 
-import com.mayunfeng.join.config.AppConfig
+
 import org.mybatis.spring.annotation.MapperScan
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

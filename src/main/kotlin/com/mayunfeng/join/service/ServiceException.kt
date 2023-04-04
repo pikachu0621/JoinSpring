@@ -6,6 +6,7 @@ class ParameterException : BaseServiceException(-1, "参数异常")
 class ParameterIllegalException : BaseServiceException(-2, "参数包含违法字符")
 // token  -3 要与前端对应
 class TokenFailureException : BaseServiceException(-3, "您没有权限访问")
+class DataNulException : BaseServiceException(-4, "数据错误")
 
 // user
 class UserPasswordException : BaseServiceException(-101, "密码或账号错误")
@@ -52,5 +53,8 @@ class JoinGroupNoException : BaseServiceException(-802, "您未加入该组，�
 class StartSignNulException : BaseServiceException(-901, "此签到不存在")
 class StartSignUserAuthorityEditException : BaseServiceException(-902, "此签到您没有操作权限")
 class StartSignNulAddUserEditException : BaseServiceException(-904, "此组未加入成员无法发起签到")
+class StartSignThisCheckInHasEndedException : BaseServiceException(-905, "此签到已结束")
+class StartSignKeyException : BaseServiceException(-906, "签到Key错误")
+class StartSignDelException : BaseServiceException(-907, "此签到已删除")
 
 

@@ -1,6 +1,7 @@
 package com.mayunfeng.join.service
 
 import com.mayunfeng.join.model.StartSignTable
+import com.mayunfeng.join.model.UserSignTable
 import com.mayunfeng.join.utils.JsonResult
 
 interface IStartSignService {
@@ -36,6 +37,13 @@ interface IStartSignService {
     fun getSignAllInfoListByUserId(): JsonResult<Array<StartSignTable>>
 
 
+    /**
+     * 根据 signId 获取数据
+     * @param signId id
+     */
+    fun queryStartSignInfoById(signId: Long): StartSignTable {
+        return StartSignTable()
+    }
 
 
 

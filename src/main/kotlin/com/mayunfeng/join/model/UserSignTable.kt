@@ -39,7 +39,6 @@ class UserSignTable(
     )
     var signComplete: Boolean = false,
 
-
     @Column(
         comment = "签到时间",
         defaultValue = "",
@@ -47,15 +46,18 @@ class UserSignTable(
     )
     var signTime: String? = "",
 
-
     // 用户数据
     @TableField(exist = false)
     var userTable: UserTable? = null,
+
+    // 数据
+    @TableField(exist = false)
+    var startSignInfo: StartSignTable? = null
 
 ) : BaseTable(), Serializable
 
 
 data class UserSignAndStartSign(
-    val userSignTable: ArrayList<UserSignTable>,
+    val userSignTable: List<UserSignTable>,
     val startSignTable: StartSignTable,
 ):  Serializable

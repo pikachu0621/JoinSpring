@@ -16,7 +16,6 @@ data class StartSignTable(
         isNull = false,
         defaultValue = "0"
     )
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var userId: Long = 0,
 
     @Column(
@@ -31,7 +30,7 @@ data class StartSignTable(
         isNull = true,
         defaultValue = "default"
     )
-    var signTitle: String? = "default",
+    var signTitle: String = "default",
 
 
     @Column(
@@ -39,7 +38,7 @@ data class StartSignTable(
         isNull = true,
         defaultValue = "default"
     )
-    var signContent: String? = "default",
+    var signContent: String = "default",
 
 
     @Column(
@@ -57,7 +56,7 @@ data class StartSignTable(
         isNull = true,
         defaultValue = "-1"
     )
-    var signKey: String? = "-1",
+    var signKey: String = "-1",
 
 
     @Column(
@@ -65,8 +64,8 @@ data class StartSignTable(
         isNull = true,
         defaultValue = "-1"
     )
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    var signTime: Long? = -1,
+    var signTime: Long = -1,
+
 
 
 
@@ -96,11 +95,15 @@ data class StartSignTable(
         isNull = true,
         defaultValue = "-1"
     )
-    var signMap: String? = "-1",
+    var signMap: String = "-1",
 
 
     @TableField(exist = false)
     var signGroupInfo: GroupTable? = null,
+
+    // 发起者 User
+    @TableField(exist = false)
+    var userTable: UserTable = UserTable(),
 
     // 已完成人数
     @TableField(exist = false)
@@ -114,5 +117,9 @@ data class StartSignTable(
     // 总人数
     @TableField(exist = false)
     var signAllPeople: Int = 0,
+
+    // 剩余时间 0 为已结束
+    @TableField(exist = false)
+    var signTimeRemaining: Long = 0
 
     ) : BaseTable(), Serializable

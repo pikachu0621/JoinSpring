@@ -40,6 +40,4 @@ class PublicController : BaseController(), IPublicService {
     @PostMapping("/b8bf3c230a63bd35")
     @ResponseBody
     override fun upFile(@RequestParam("f") file: MultipartFile?): JsonResult<String> = publicServiceImpl.upFile(file)
-
-
 }

@@ -3,6 +3,7 @@ package com.mayunfeng.join.service.impl
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER
+import com.mayunfeng.join.handler.UserWebSocketHandler
 import com.mayunfeng.join.mapper.UserTableMapper
 import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.*
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.socket.CloseStatus
 import java.awt.image.BufferedImage
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,6 +33,9 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
 
     @Autowired
     private lateinit var pictureServiceImpl: PictureServiceImpl
+
+    @Autowired
+    private lateinit var userWebSocketHandler: UserWebSocketHandler
 
     @Autowired
     private lateinit var APPConfig: AppConfig
@@ -70,6 +75,8 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         val put = tokenServiceImpl.put(userData.id, userAccount, userPassword, APPConfig.configTokenTime)
         userData.loginToken = put.tokenLogin
         // 返回的数据
+        // 断开失效的ws
+        userWebSocketHandler.disLinkUnboundToken()
         return JsonResult.ok(disposeReturnUserData(userData))
     }
 
@@ -80,7 +87,10 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         return JsonResult.ok(disposeReturnUserData(userData))
     }
 
-
+    override fun userInfoById(userId: Long): UserTable {
+        val userData = userTableMapper.selectById(userId)
+        return disposeReturnUserData(userData, true)
+    }
 
 
     override fun userImage(c: String?, userId: Long?): BufferedImage {
@@ -204,6 +214,8 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                     if (OtherUtils.isFieldIllegal(userNewPassword)) throw ParameterIllegalException()
                     it.userPassword = userNewPassword
                     tokenServiceImpl.deleteByToken(tokenLogin)
+                    // 断开失效的ws
+                    userWebSocketHandler.disLinkUnboundToken(CloseStatus.PROTOCOL_ERROR)
                 })
         )
     }

@@ -8,8 +8,10 @@ import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.TimeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.sql.Time
 import java.util.UUID
 import javax.servlet.http.HttpServletRequest
 
@@ -28,6 +30,9 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
 
     @Autowired
     private lateinit var joinGroupServiceImpl: JoinGroupServiceImpl
+
+    @Autowired
+    private lateinit var userServiceImpl: UserServiceImpl
 
     @Autowired
     private lateinit var request: HttpServletRequest
@@ -53,7 +58,7 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
         val queryJoinGroupAllUser = joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
         if ((queryJoinGroupAllUser.result!!.result!!.size <= 1)) throw StartSignNulAddUserEditException()
 
-        if (signType == 3) {
+        if (signType == 2) {
             signKeyNul = OtherUtils.createTimeMd5()
         }
         val startSignTable = StartSignTable(
@@ -71,23 +76,25 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
     }
 
 
-
     override fun getSignAllInfoListByUserId(): JsonResult<Array<StartSignTable>> {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)
         val queryByToken = tokenServiceImpl.queryByToken(token!!)
-        val queryByFieldList = startSignTableMapper.querySignAllInfoUserId(queryByToken!!.userId, "desc") ?: arrayListOf()
-        queryByFieldList.forEach {
-            try {
-                it.signGroupInfo = groupServiceImpl.queryGroupInfoById(it.groupId).result
-            } catch (_: Exception) {
-            }
-        }
+        val queryByFieldList =
+            startSignTableMapper.querySignAllInfoUserId(queryByToken!!.userId, "desc") ?: arrayListOf()
+        queryByFieldList.forEach { dataIntegration(it) }
         return JsonResult.ok(queryByFieldList.toTypedArray())
     }
 
 
-    override fun delSign(signId: Long): JsonResult<Array<StartSignTable>>  {
+    override fun queryStartSignInfoById(signId: Long): StartSignTable {
+        val startSignTable = startSignTableMapper.selectById(signId) ?: throw StartSignNulException()
+        return dataIntegration(startSignTable)
+    }
+
+
+    override fun delSign(signId: Long): JsonResult<Array<StartSignTable>> {
         verifySign(signId)
+        userSignServiceImpl.delUserSignBySign(signId)
         startSignTableMapper.deleteById(signId)
         return getSignAllInfoListByUserId()
     }
@@ -106,6 +113,35 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
         if (startSignTable.userId != userId) throw StartSignUserAuthorityEditException()
         return userId
+    }
+
+
+    fun dataIntegration(startSignTable: StartSignTable): StartSignTable {
+
+        val totalNumberOfPeople = userSignServiceImpl.getTotalNumberOfPeople(startSignTable.id)
+        val numberOfPeopleCompleted = userSignServiceImpl.getNumberOfPeopleCompleted(startSignTable.id)
+        startSignTable.signAllPeople = totalNumberOfPeople
+        startSignTable.signHaveCompletedPeople = numberOfPeopleCompleted
+        startSignTable.signNotCompletedPeople = totalNumberOfPeople - numberOfPeopleCompleted
+        startSignTable.userTable = userServiceImpl.userInfoById(startSignTable.userId)
+
+        if (startSignTable.signTime != -1L){
+            if (!startSignTable.signExpire){
+                val timeDistance = TimeUtils.getTimeDistance(TimeUtils.getCurrentTime(), startSignTable.createTime!!)
+                startSignTable.signExpire = timeDistance > startSignTable.signTime
+                if (!startSignTable.signExpire){
+                    startSignTable.signTimeRemaining = startSignTable.signTime - timeDistance
+                }
+                if (startSignTable.signExpire) {
+                    startSignTableMapper.updateById(startSignTable)
+                }
+            }
+        }
+
+        try {
+            startSignTable.signGroupInfo = groupServiceImpl.queryGroupInfoById(startSignTable.groupId).result
+        } catch (_: Exception) { }
+        return startSignTable
     }
 
 }

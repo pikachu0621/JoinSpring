@@ -53,6 +53,8 @@ class AppConfig {
     @Value("\${client.config.group-type}")
     var clientConfigGroupType: Array<String> = arrayOf()
 
+    @Value("\${config-websocket-path}")
+    var configWebsocketPath: Array<String> = arrayOf()
 
     val configUserDir = "${System.getProperty("user.dir")}${File.separator}"
 

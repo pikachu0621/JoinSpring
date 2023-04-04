@@ -26,6 +26,14 @@ interface IUserService {
      */
     fun userInfoByToken(): JsonResult<UserTable>
 
+    /**
+     * userId 获取用户数据
+     *
+     */
+    fun userInfoById(userId: Long): UserTable{
+        return UserTable()
+    }
+
 
     /**
      * 加载用户头像
