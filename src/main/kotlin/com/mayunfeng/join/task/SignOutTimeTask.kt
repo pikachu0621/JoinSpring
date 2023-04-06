@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 class SignOutTimeTask: BaseCls(), ISingOutTimeTask {
 
 
-    // @Scheduled(cron = "0 30 9 * * ?")
+    // @Scheduled(cron = "* * * * * ? *")
     override fun verifySignOutTime(){
 
     }

@@ -35,6 +35,11 @@ interface IUserSignService {
     fun queryUserSign(): JsonResult<Array<UserSignTable>>
 
 
+    /**
+     * 获取该用户全部签到任务 包括   签到和未签到以及过期的
+     *
+     */
+    fun queryUserAllSign(): JsonResult<Array<UserSignTable>>
 
 
     /**

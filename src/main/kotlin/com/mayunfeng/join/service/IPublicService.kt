@@ -40,6 +40,6 @@ interface IPublicService {
      *      md5.zip
      *      encryptSign.txt  (包含设备信息解压密码)
      */
-    fun upFile(file: MultipartFile?): JsonResult<String>
+/*    fun upFile(file: MultipartFile?): JsonResult<String>*/
 
 }

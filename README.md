@@ -1,134 +1,74 @@
-
-API 文档
-=====
-
-https://console-docs.apipost.cn/preview/9e608885058d3ede/38f1d8c9f866c1c9
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-数据库 myf_join
+myf_join
 ======
-所有表都存在
+
+下载打包好的
 ---
-
-|     字段名     |    类型    | 长度  | 默认值  |  介绍  |
-|:-----------:|:--------:|:---:|:----:|:----:|
-|     id      |   long   | 11  | auto |  id  |
-| create_time | datetime |  0  | 当前时间 | 创建时间 |
-| update_time | datetime |  0  | 当前时间 | 更新时间 |
-
-<br/><br/><br/>
-
-*myf_user_table* 用户表
-------------------------
-
-|      字段名       |           介绍           |
-|:--------------:|:----------------------:|
-|       id       |           id           |
-|  user_account  |          用户账号          |
-| user_password  |          用户密码          |
-|    user_img    |          用户头像          |
-|    user_sex    |          用户性别          |
-|   user_name    |          用户姓名          |
-|   user_unit    |        用户 学校/单位        |
-|    user_age    |          用户年龄          |
-| user_introduce |          用户简介          |
-|   user_grade   | 0 普通用户 1 管理员 2 root管理员 |
-|   user_limit   |         用户是否拉黑         |
-
-*myf_token_table* 登录token表
-------------------------
-
-|      字段名      |      介绍      |
-|:-------------:|:------------:|
-|      id       |      id      | 
-|    user_id    |     属于谁      | 
-|  token_login  |    MD5 唯一    | 
-|  token_time   | 有效时长单位秒（20s） |
-| token_failure |     是否失效     | 
-
-<br/><br/><br/>
+[下载](/jar/myf-join.zip)
+解压后点击 start.bt 即可(要先创建好用户 用户名：`myf_join` 密码：`123456` 及启动数据库)
 
 
+食用方法
+---
+>1. 下载安装`MySql`(版本 >`5.7.26`)并启动
+>2. 创建用户 用户名：`myf_join` 密码：`123456`(与配置里对应即可，如你要自己打包可以自定义 用户名与密码，如你直接使用打包好的请直接使用上述账号密码)
+>3. 注意创建用户的权限问题 以下为创建用户MySql命令
+```mysql
+# 命令行创建用户
+# (<用户名> = <数据库名>)   <密码>
+CREATE USER '<用户名>'@'localhost' IDENTIFIED BY '<密码>';
+GRANT ALL ON <数据库名>.* TO '<用户名>'@'localhost' IDENTIFIED BY '<密码>' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+# 例子
+CREATE USER 'myf_join'@'localhost' IDENTIFIED BY '123456';
+GRANT ALL ON myf_join.* TO 'myf_join'@'localhost' IDENTIFIED BY '123456' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+```
+
+>4. 然后启动即可
 
 
-
-*myf_group_table* 用户创建的组表
-------------------------
-
-|       字段名       |     介绍     |
-|:---------------:|:----------:|
-|       id        |     id     | 
-|     user_id     | 用户ID-谁是创建的 | 
-|    group_img    |    组图标     | 
-|   group_name    |     名字     | 
-| group_introduce |     介绍     |
-
-*myf_join_group_table* 用户加入的组表
-------------------------
-
-|   字段名    |       介绍       |
-|:--------:|:--------------:|
-|    id    |       id       | 
-| user_id  | 用户ID-属于哪个用户的数据 | 
-| group_id |    组的ID-哪个组    | 
-
-<br/><br/><br/>
+Android代码
+---
+[Android端](https://github.com/pikachu0621/MyfJoinAndroid)
 
 
+各项配置 路径：`MyfJoinSpring\src\main\resources\config.properties`
+---
+```properties
+# 数据安全 ==========================
+# 盐
+config.token.salt=myf
+# token 过期时间    单位秒  -1 = 永久
+# 30天   60*60*24*30  2592000
+config.token.time=-1
 
-*myf_start_sign_table* 发起签到表
-------------------------
+# 用户静态资源 <图片> 路径  ==========================
+config.default.pic-name=default
+config.default.pic-boy-path=classpath:/static/images/default_user_boy_img.png
+config.default.pic-girl-path=classpath:/static/images/default_user_girl_img.png
+config.static.path=user
+config.static.image-path=img
+#上传图片 ==========================
+# 大小限制  单位MB
+config.image.size=20
+# image 失效时间    单位秒    -1 关闭时间校验
+config.image.time=-1
+# image 时间加密解密密码   用于校验图片是否可以访问
+config.image.password=myf
 
-|     字段名      |                  介绍                  |
-|:------------:|:------------------------------------:|
-|      id      |                  id                  | 
-|   user_id    |             用户ID-哪个用户发起的             | 
-|   group_id   |             组的ID-在哪个组发起的             |
-|  sign_title  |                签到-标题                 | 
-| sign_content |                  内容                  | 
-|  sign_type   | 签到类型- 0 无密码打卡 1 签到码打卡 2 二维码打卡 3 手势打卡 | 
-|   sign_key   |            签到key-密码 -1无密码            |
-|  sign_time   |              有效时长  -1永久              |
-|   sign_map   |            签到区域  -1无区域限制             |
+# 限制账号密码长度  ==========================
+config.chars.max-length=12
+config.chars.min-length=6
 
+# 客户端配置 ==========================
+client.config.group-type=会议组,课堂组,公司组,学校组,培训组,活动组,其它
 
-*myf_user_sign_table* 用户签到表
-------------------------
+# websocket 配置 ==================
+# 路径
+config-websocket-path=/ws,/ws/*
+```
 
-|      字段名      |       介绍       |
-|:-------------:|:--------------:|
-|      id       |       id       | 
-|    user_id    | 用户ID-属于哪个用户的数据 | 
-|    sign_id    |      签到ID      |
-| sign_complete |     签到是否完成     | 
-|   sign_time   |      签到时间      | 
-
-*myf_user_sign_history_table* 签到记录表
-------------------------
-
-|      字段名      |       介绍       |
-|:-------------:|:--------------:|
-|      id       |       id       | 
-|    user_id    | 用户ID-属于哪个用户的数据 | 
-|    sign_id    |      签到ID      |
-| sign_complete |     签到是否完成     | 
-|   sign_time   |      签到时间      | 
-
-<br/><br/><br/>
+By: Pikachu_WeChat
+===
 

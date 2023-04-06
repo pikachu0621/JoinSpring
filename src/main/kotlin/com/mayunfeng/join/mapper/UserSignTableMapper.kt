@@ -16,6 +16,9 @@ interface UserSignTableMapper : BaseMapper<UserSignTable>{
     @Select("SELECT * FROM myf_user_sign_table WHERE user_id=\${userId} AND sign_complete=0 ORDER BY `id` \${order}") // create_time  时间排序会丢失相同数据 desc
     fun queryToBeCompleted(userId: Long, order: String = "desc"): ArrayList<UserSignTable>?
 
+    @Select("SELECT * FROM myf_user_sign_table WHERE user_id=\${userId} ORDER BY `id` \${order}") // create_time  时间排序会丢失相同数据 desc
+    fun queryToBeAll(userId: Long, order: String = "desc"): ArrayList<UserSignTable>?
+
     @Select("SELECT * FROM myf_user_sign_table WHERE user_id=\${userId} AND sign_id=\${signId}")
     fun queryToSign(userId: Long, signId: Long): UserSignTable?
 }

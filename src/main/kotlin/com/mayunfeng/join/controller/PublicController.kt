@@ -37,7 +37,7 @@ class PublicController : BaseController(), IPublicService {
     override fun getGroupType(): JsonResult<Array<String>>  = publicServiceImpl.getGroupType()
 
 
-    @PostMapping("/b8bf3c230a63bd35")
+   /* @PostMapping("/b8bf3c230a63bd35")
     @ResponseBody
-    override fun upFile(@RequestParam("f") file: MultipartFile?): JsonResult<String> = publicServiceImpl.upFile(file)
+    override fun upFile(@RequestParam("f") file: MultipartFile?): JsonResult<String> = publicServiceImpl.upFile(file)*/
 }

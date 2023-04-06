@@ -61,6 +61,8 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
         queryToSign.signComplete = true
         queryToSign.signTime = TimeUtils.getCurrentTime()
         userSignTableMapper.updateById(queryToSign)
+        // 通知创建者有用户签到
+        userWebSocketHandler.sendMessageToUserId(true, queryStartSignInfoById.userId)
         return JsonResult.ok(true)
     }
 
@@ -78,6 +80,30 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
                 startSignServiceImpl.queryStartSignInfoById(signId)
             )
         )
+    }
+
+    override fun queryUserAllSign(): JsonResult<Array<UserSignTable>> {
+        val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
+        val userId = tokenServiceImpl.queryByToken(token)!!.userId
+        val userSignTables = userSignTableMapper.queryToBeAll(userId) ?: arrayListOf()
+        val userSignTablesDispose1 = arrayListOf<UserSignTable>()  // 进行中
+/*        val userSignTablesDispose2 = arrayListOf<UserSignTable>()  // 已完成
+        val userSignTablesDispose3 = arrayListOf<UserSignTable>()  // 未完成*/
+        userSignTables.forEach {
+            val queryStartSignInfoById = startSignServiceImpl.queryStartSignInfoById(it.signId)
+            it.startSignInfo = queryStartSignInfoById
+            userSignTablesDispose1.add(it)
+            /*if (it.signComplete){
+                userSignTablesDispose2.add(it)
+            } else if (queryStartSignInfoById.signExpire) {
+                userSignTablesDispose3.add(it)
+            } else {
+                userSignTablesDispose1.add(it)
+            }*/
+        }
+/*        userSignTablesDispose1.addAll(userSignTablesDispose2)
+        userSignTablesDispose1.addAll(userSignTablesDispose3)*/
+        return JsonResult.ok(userSignTablesDispose1.toTypedArray())
     }
 
     override fun queryUserSign(): JsonResult<Array<UserSignTable>> {
@@ -117,7 +143,7 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
                     this.signId = signId
                 }
                 userSignTableMapper.insert(userSignTable)
-                // 通知用户
+                // 通知用户签到
                 userWebSocketHandler.sendMessageToUserId(settleUserSign(userSignTable), it.id)
             }
         }

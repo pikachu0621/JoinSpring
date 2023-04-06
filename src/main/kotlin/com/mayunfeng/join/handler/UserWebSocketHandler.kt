@@ -46,8 +46,7 @@ class UserWebSocketHandler: TextWebSocketHandler()  {
         val token = OtherUtils.getMustParameter(session.uri, session.handshakeHeaders, TOKEN_PARAMETER)!!
         val userInfo = userServiceImpl.userInfoById(tokenServiceImpl.queryByToken(token)!!.userId)
         log.info("    >>用户 ${userInfo.userName} 说：${message.payload}")
-
-        session.sendMessage(TextMessage(ObjectMapper().writeValueAsString(userInfo)))
+        // session.sendMessage(TextMessage(ObjectMapper().writeValueAsString(userInfo)))
     }
 
     @Throws(Exception::class)
@@ -59,11 +58,8 @@ class UserWebSocketHandler: TextWebSocketHandler()  {
         sessionPools[token] = session
         addOnlineCount()
 
-
-
-
         log.info("[*]用户 ${userInfo.userName} 已上线, 当前在线人数$onlineNum")
-        session.sendMessage(TextMessage("[*]用户 ${userInfo.userName} 已上线, 当前在线人数$onlineNum"))
+        // session.sendMessage(TextMessage("[*]用户 ${userInfo.userName} 已上线, 当前在线人数$onlineNum"))
     }
 
 

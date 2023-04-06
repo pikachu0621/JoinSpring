@@ -36,7 +36,7 @@ class WebSocketInterceptor: HandshakeInterceptor, BaseCls() {
         logi("------ 开始握手：[IP:${OtherUtils.getRemoteIP(request)}]-[token:$token]-[请求Uri:${request.uri.path}]")
         if (OtherUtils.isFieldEmpty(token) || !tokenServiceImpl.verify(token!!) ) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED)
-            logi("------ 握手失败：[IP:${OtherUtils.getRemoteIP(request)}]-[原因:token无效]-[请求Uri:${request.uri.path}")
+            logi("------ 握手失败：[IP:${OtherUtils.getRemoteIP(request)}]-[原因:token无效]-[请求Uri:${request.uri.path}]-[token-${token}]")
             return false
         }
         return true
@@ -49,6 +49,6 @@ class WebSocketInterceptor: HandshakeInterceptor, BaseCls() {
         exception: Exception?
     ) {
 
-        logi("------ 握手完成：[IP:${OtherUtils.getRemoteIP(request)}]-[请求Uri:${request.uri.path}")
+        logi("------ 握手完成：[IP:${OtherUtils.getRemoteIP(request)}]-[请求Uri:${request.uri.path}]")
     }
 }

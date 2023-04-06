@@ -34,7 +34,8 @@ class UserSignController : BaseController(), IUserSignService {
     @GetMapping("/my-sign-info")
     override fun queryUserSign(): JsonResult<Array<UserSignTable>> = userSignServiceImpl.queryUserSign()
 
-
+    @GetMapping("/my-sign-all-info")
+    override fun queryUserAllSign(): JsonResult<Array<UserSignTable>> = userSignServiceImpl.queryUserAllSign()
 
 
 }
