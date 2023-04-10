@@ -1,17 +1,19 @@
 myf_join
 ======
 
-下载打包好的
+
+API文档
+-------
+[API文档](https://console-docs.apipost.cn/preview/9e608885058d3ede/38f1d8c9f866c1c9)
+
 ---
-[下载](/jar/myf-join.zip)
-解压后点击 start.bt 即可(要先创建好用户 用户名：`myf_join` 密码：`123456` 及启动数据库)
 
 
 食用方法
 ---
 >1. 下载安装`MySql`(版本 >`5.7.26`)并启动
 >2. 创建用户 用户名：`myf_join` 密码：`123456`(与配置里对应即可，如你要自己打包可以自定义 用户名与密码，如你直接使用打包好的请直接使用上述账号密码)
->3. 注意创建用户的权限问题 以下为创建用户MySql命令
+>3. 注意创建用户的权限问题 以下为创建用户mysql命令
 ```mysql
 # 命令行创建用户
 # (<用户名> = <数据库名>)   <密码>
@@ -24,13 +26,15 @@ CREATE USER 'myf_join'@'localhost' IDENTIFIED BY '123456';
 GRANT ALL ON myf_join.* TO 'myf_join'@'localhost' IDENTIFIED BY '123456' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
+>4. [下载](/jar/myf-join.zip)打包好的zip, 解压后点击 start.bat 即可
 
->4. 然后启动即可
-
+---
 
 Android代码
 ---
 [Android端](https://github.com/pikachu0621/MyfJoinAndroid)
+
+---
 
 
 各项配置 路径：`MyfJoinSpring\src\main\resources\config.properties`
