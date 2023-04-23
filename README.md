@@ -76,11 +76,11 @@ config-websocket-path=/ws,/ws/*
 ---
 
 
-后台地址
+后台管理地址
 ======
 加上 ./admin/index.html
 
-vue管理部分效果图
+vue管理界面部分效果图
 ======
 
 |首页|管理用户|
