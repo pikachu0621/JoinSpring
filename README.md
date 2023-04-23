@@ -2,10 +2,6 @@ myf_join
 ======
 
 
-后台地址
-======
-./admin/index.html
-
 API文档
 -------
 [API文档](https://console-docs.apipost.cn/preview/9e608885058d3ede/38f1d8c9f866c1c9)
@@ -76,6 +72,22 @@ client.config.group-type=会议组,课堂组,公司组,学校组,培训组,活�
 # 路径
 config-websocket-path=/ws,/ws/*
 ```
+
+---
+
+
+后台地址
+======
+加上 ./admin/index.html
+
+vue管理部分效果图
+======
+
+|首页|管理用户|
+|:---:|:--:|
+| ![](/material/1.png) | ![](/material/2.png) |
+
+---
 
 By: Pikachu_WeChat
 ===
