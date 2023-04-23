@@ -38,7 +38,7 @@ class FileSendTypeException : BaseServiceException(-605, "文件上传失败,格
 class GroupNameLengthException : BaseServiceException(-701, "名字长度请保持在 (1~20)")
 class GroupIrdLengthException : BaseServiceException(-702, "介绍长度请保持在 (1~100)")
 class GroupTypeException : BaseServiceException(-703, "此类型不存在")
-class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没有操作权限")
+class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没有操作权限 (恶意调用api将会封禁您的账号)")
 class GroupNulException : BaseServiceException(-705, "此组不存在")
 class GroupByToMyException : BaseServiceException(-706, "不能自己踢自己")
 class GroupUserNotJoinException : BaseServiceException(-707, "该用户未加入此组，无法操作")
@@ -57,4 +57,11 @@ class StartSignThisCheckInHasEndedException : BaseServiceException(-905, "此签
 class StartSignKeyException : BaseServiceException(-906, "签到Key错误")
 class StartSignDelException : BaseServiceException(-907, "此签到已删除")
 
+
+
+// 后台管理
+class BackstageTokenException : BaseServiceException(-1001, "登录失效！")
+class BackstageAuthorityException : BaseServiceException(-1002, "您无权限！")
+class BackstageLimitToRootException : BaseServiceException(-1002, "不能拉黑ROOT用户！")
+class BackstageDelToRootException : BaseServiceException(-1002, "不能删除ROOT用户！")
 

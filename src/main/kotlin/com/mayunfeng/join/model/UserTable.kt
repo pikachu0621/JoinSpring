@@ -101,7 +101,6 @@ data class UserTable(
         length = 1,
         defaultValue = "0"
     )
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     var userLimit: Boolean = false,
 
 

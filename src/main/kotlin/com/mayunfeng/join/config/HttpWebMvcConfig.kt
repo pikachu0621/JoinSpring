@@ -9,6 +9,7 @@ import org.springframework.http.converter.BufferedImageHttpMessageConverter
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.io.File
 import javax.annotation.Resource
@@ -29,7 +30,9 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
             .addPathPatterns("/**")     // 拦截所有请求，包括静态资源文件
             .excludePathPatterns(
                 "/myf-user-api/login-user",
+                "/myf-bg-api/login",
                 "/myf-puc-api/**",
+                "/admin/**",
                 "/*.html",
                 "/css/**",
                 "/images/**",
@@ -39,6 +42,9 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
                 "/fonts/**")  //登陆API，静态资源
     }
 
+    override fun addViewControllers(registry: ViewControllerRegistry) {
+        registry.addViewController("/admin/").setViewName("forward:/admin/index.html")
+    }
 
     // 添加静态资源路径
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {

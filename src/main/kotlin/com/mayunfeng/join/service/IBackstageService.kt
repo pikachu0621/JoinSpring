@@ -1,5 +1,10 @@
 package com.mayunfeng.join.service
 
+import com.mayunfeng.join.model.GroupTable
+import com.mayunfeng.join.model.UserTable
+import com.mayunfeng.join.utils.JsonResult
+import org.springframework.web.multipart.MultipartFile
+
 
 /**
  * todo 后台管理 API
@@ -14,21 +19,30 @@ interface IBackstageService {
      * 登录完成返回 token
      *
      */
-    fun loginRoot()
+    fun loginRoot(rootAccount: String, rootPassword: String): JsonResult<UserTable>
+
+
+    /**
+     * 验证 Token   (需要验证用户等级,防止有人用普通用户token非法操作)
+     */
+    fun verifyToken(token: String): JsonResult<UserTable>
+
+
+
 
 
     /**
      * 获取全部用户
      *
      */
-    fun getAllUser()
+    fun getAllUser(): JsonResult<Array<UserTable>>
 
 
     /**
      * 获取全部群组
      *
      */
-    fun getAllGroup()
+    fun getAllGroup(): JsonResult<Array<GroupTable>>
 
 
     /**
@@ -36,14 +50,7 @@ interface IBackstageService {
      * 绑定的组员也一并删除
      *
      */
-    fun delGroupByGroupId()
-
-
-    /**
-     * 根据UserId拉黑用户
-     *
-     */
-    fun shieldUserByUserId()
+    fun delGroupByGroupId(groupId: Long): JsonResult<Boolean>
 
 
     /**
@@ -51,7 +58,7 @@ interface IBackstageService {
      * 删除一切有关数据  包括创建的群组，加入的群组，签到信息，历史记录。。。等
      *
      */
-    fun delUserByUserId()
+    fun delUserByUserId(userId: Long): JsonResult<Boolean>
 
 
     /**
@@ -61,7 +68,18 @@ interface IBackstageService {
      * 空字段为不修改
      *
      */
-    fun rootEditUserInfo()
+    fun rootEditUserInfo(
+        userId: Long,
+        userPassword: String?,
+        userSex: Boolean?,
+        userName: String?,
+        userUnit: String?,
+        userBirth: String?,
+        userIntroduce: String?,
+        userGrade: Int?,
+        userLimit: Boolean?,
+        userImage: MultipartFile?
+    ): JsonResult<Boolean>
 
 
     /**
@@ -70,5 +88,10 @@ interface IBackstageService {
      * 空字段为不修改
      *
      */
-    fun rootEditGroupInfo()
+    fun rootEditGroupInfo(
+        groupName: String,
+        groupIntroduce: String,
+        groupType: String,
+        groupImg: MultipartFile
+    ): JsonResult<Boolean>
 }

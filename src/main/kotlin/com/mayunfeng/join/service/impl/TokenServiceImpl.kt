@@ -54,6 +54,7 @@ class TokenServiceImpl : BaseServiceImpl(), ITokenService {
 
     // 2023-03-07 23:56:00
     // yyyy-MM-dd HH:mm:ss
+    // true 有效 false无效
     override fun verify(token: String): Boolean {
         val tokenData = queryByToken(token) ?: return false
         if (tokenData.tokenTime == -1L) return true

@@ -84,6 +84,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     override fun userInfoByToken(): JsonResult<UserTable> {
         val tokenBean = tokenServiceImpl.queryByToken(OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!)!!
         val userData = userTableMapper.selectById(tokenBean.userId)
+        if (userData.userLimit) throw UserBlacklistException()
         return JsonResult.ok(disposeReturnUserData(userData))
     }
 

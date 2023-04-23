@@ -2,6 +2,10 @@ myf_join
 ======
 
 
+后台地址
+======
+./admin/index.html
+
 API文档
 -------
 [API文档](https://console-docs.apipost.cn/preview/9e608885058d3ede/38f1d8c9f866c1c9)

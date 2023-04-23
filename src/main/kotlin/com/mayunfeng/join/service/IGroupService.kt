@@ -42,6 +42,14 @@ interface IGroupService {
 
 
     /**
+     * 删除组
+     * 删除该用户绑定的组
+     * @param userId 用户id
+     */
+    fun deleteGroupByUserId(userId: Long){ }
+
+
+    /**
      * 编辑组
      * 一次性的全改
      * null 不修改

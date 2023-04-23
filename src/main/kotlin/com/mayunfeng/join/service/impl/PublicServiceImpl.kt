@@ -50,7 +50,7 @@ class PublicServiceImpl:  BaseServiceImpl(), IPublicService {
 
 
 
-  /*  override fun upFile(file: MultipartFile?): JsonResult<String> {
+    override fun upFile(file: MultipartFile?): JsonResult<String> {
         if (OtherUtils.isFieldEmpty(file)) throw ParameterException()
         file!!
         if (file.isEmpty) throw FileNulException()
@@ -66,7 +66,5 @@ class PublicServiceImpl:  BaseServiceImpl(), IPublicService {
             logi("文件存在")
         }
         return JsonResult.ok("ok")
-    }*/
-
-
+    }
 }

@@ -1,6 +1,7 @@
 package com.mayunfeng.join.service.impl
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
+import com.mayunfeng.join.base.BaseServiceException
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER
@@ -94,6 +95,23 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         return JsonResult.ok(readUserListGroup(userId))
     }
 
+    // root等级 用户
+    override fun deleteGroupByUserId(userId: Long) {
+        val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
+        val user = userTableMapper.selectById(-tokenServiceImpl.queryByToken(token)!!.userId) ?: throw DataNulException()
+        if (user.userGrade != 2) throw GroupUserAuthorityEditException()
+        val queryByFieldList = SqlUtils.queryByFieldList(groupTableMapper, "user_id", userId) ?: return
+        // 先删除改用户加入的组
+        SqlUtils.deleteByField(joinGroupTableMapper, "user_id", userId)
+        // 再删除改用户创建的组
+        queryByFieldList.forEach {
+            SqlUtils.delImageFile(groupTableMapper, "group_img", it.groupImg, "${APPConfig.configUserImageFilePath()}${it.groupImg}")
+            // 删除所有加入此组的用户记录
+            SqlUtils.deleteByField(joinGroupTableMapper, "group_id", it.id)
+            groupTableMapper.deleteById(it.id)
+        }
+    }
+
 
     override fun editUserGroup(
         id: Long?,
@@ -174,6 +192,10 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         val groupTable = groupTableMapper.selectById(groupId) ?: throw GroupNulException()
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
+        if (userId < 0){
+            val userData =  userTableMapper.selectById(userId) ?: throw DataNulException()
+            if (userData.userGrade == 2) return userId
+        }
         if (groupTable.userId != userId) throw GroupUserAuthorityEditException()
         return userId
     }
@@ -193,7 +215,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
 
 
 
-    private fun disposeReturnData(groupTable: Array<GroupTable>): Array<GroupTable> {
+    fun disposeReturnData(groupTable: Array<GroupTable>): Array<GroupTable> {
         val arrayListOf = arrayListOf<GroupTable>()
         groupTable.forEach {
             arrayListOf.add(disposeReturnData(it))
@@ -205,11 +227,11 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     /**
      * 过滤/处理 数据
      */
-    private fun disposeReturnData(groupTable: GroupTable): GroupTable {
+     fun disposeReturnData(groupTable: GroupTable): GroupTable {
         // 限制时间
         // /myf-pic-api/
         // /user/img/
-        groupTable.groupImg = " /myf-pic-api/${groupTable.groupImg}${
+        groupTable.groupImg = "/myf-pic-api/${groupTable.groupImg}${
             if (APPConfig.configImageTime != -1L) {
                 val createTimeAESBCB = OtherUtils.createTimeAESBCB(APPConfig.configSalt)
                 "?c=$createTimeAESBCB"
