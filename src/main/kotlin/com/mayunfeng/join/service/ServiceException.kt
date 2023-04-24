@@ -62,6 +62,9 @@ class StartSignDelException : BaseServiceException(-907, "此签到已删除")
 // 后台管理
 class BackstageTokenException : BaseServiceException(-1001, "登录失效！")
 class BackstageAuthorityException : BaseServiceException(-1002, "您无权限！")
-class BackstageLimitToRootException : BaseServiceException(-1002, "不能拉黑ROOT用户！")
-class BackstageDelToRootException : BaseServiceException(-1002, "不能删除ROOT用户！")
+class BackstageLimitToRootException : BaseServiceException(-1003, "不能拉黑自己！")
+class BackstageDelToMeException : BaseServiceException(-1004, "不能删除自己！")
+class BackstageGradeToMeException : BaseServiceException(-1004, "不能设置自己的等级！")
+class BackstageGradeToException : BaseServiceException(-1005, "您无权设置用户等级！")
+class BackstageEditToRootException : BaseServiceException(-1006, "您无权操作此用户！")
 

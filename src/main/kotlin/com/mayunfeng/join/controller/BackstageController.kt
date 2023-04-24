@@ -29,7 +29,7 @@ class BackstageController : BaseController(),  IBackstageService {
 
 
     @GetMapping("/info")
-    override fun verifyToken(@RequestParam("token") token: String): JsonResult<UserTable> =
+    override fun verifyToken(@RequestParam("token") token: String, needRoot: Boolean): JsonResult<UserTable> =
         backstageServiceImpl.verifyToken(token)
 
     @GetMapping("/all-user")

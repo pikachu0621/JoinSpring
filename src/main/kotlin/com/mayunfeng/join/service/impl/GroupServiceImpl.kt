@@ -7,6 +7,7 @@ import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER
 import com.mayunfeng.join.mapper.GroupTableMapper
 import com.mayunfeng.join.mapper.JoinGroupTableMapper
+import com.mayunfeng.join.mapper.UserSignTableMapper
 import com.mayunfeng.join.mapper.UserTableMapper
 import com.mayunfeng.join.model.GroupTable
 import com.mayunfeng.join.model.JoinGroupTable
@@ -50,6 +51,9 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
 
     @Autowired
     private lateinit var joinGroupTableMapper: JoinGroupTableMapper
+
+    @Autowired
+    private lateinit var userSignTableMapper: UserSignTableMapper
 
 
     override fun createGroup(img: MultipartFile?, name: String?, type: String?, ird: String?): JsonResult<GroupTable> {
@@ -99,11 +103,15 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     override fun deleteGroupByUserId(userId: Long) {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val user = userTableMapper.selectById(-tokenServiceImpl.queryByToken(token)!!.userId) ?: throw DataNulException()
-        if (user.userGrade != 2) throw GroupUserAuthorityEditException()
+        if (user.userGrade == 0) throw GroupUserAuthorityEditException()
         val queryByFieldList = SqlUtils.queryByFieldList(groupTableMapper, "user_id", userId) ?: return
-        // 先删除改用户加入的组
+        // 先删除该用户加入的组
         SqlUtils.deleteByField(joinGroupTableMapper, "user_id", userId)
-        // 再删除改用户创建的组
+        // 再删除该用户创建的组
+        SqlUtils.deleteByField(joinGroupTableMapper, "user_id", userId)
+        // 然后删除该用户的签到任务
+        SqlUtils.deleteByField(userSignTableMapper, "user_id", userId)
+        // 最后删除该用户创建的组
         queryByFieldList.forEach {
             SqlUtils.delImageFile(groupTableMapper, "group_img", it.groupImg, "${APPConfig.configUserImageFilePath()}${it.groupImg}")
             // 删除所有加入此组的用户记录

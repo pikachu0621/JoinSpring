@@ -1,6 +1,5 @@
 package com.mayunfeng.join.service.impl
 
-import com.mayunfeng.join.base.BaseServiceException
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER
@@ -56,7 +55,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         if (userData.userPassword != rootPassword) throw UserPasswordException()
 
         if (userData.userLimit) throw UserBlacklistException()
-        if (userData.userGrade != 2) throw BackstageAuthorityException()
+        if (userData.userGrade == 0 ) throw BackstageAuthorityException()
         // 生成token   - 防止前端  token失效
         val put = tokenServiceImpl.put(-(userData.id), rootAccount, rootPassword, APPConfig.configTokenTime)
         userData.loginToken = put.tokenLogin
@@ -64,12 +63,12 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
     }
 
 
-    override fun verifyToken(token: String): JsonResult<UserTable> {
+    override fun verifyToken(token: String, needRoot: Boolean): JsonResult<UserTable> {
         if (!tokenServiceImpl.verify(token)) throw BackstageTokenException()
         val userId = -tokenServiceImpl.queryByToken(token)!!.userId
         val userInfoById = userServiceImpl.userInfoById(userId)
         if (userInfoById.userLimit) throw UserBlacklistException()
-        if (userInfoById.userGrade != 2) throw BackstageAuthorityException()
+        if (userInfoById.userGrade == 0) throw BackstageAuthorityException()
         return JsonResult.ok(userInfoById)
     }
 
@@ -101,9 +100,12 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
 
     override fun delUserByUserId(userId: Long): JsonResult<Boolean> {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
-        verifyToken(token)
+        val userData = verifyToken(token).result!!
         val userInfoById = userTableMapper.selectById(userId) ?: throw DataNulException()
-        if (userInfoById.userGrade == 2) throw BackstageDelToRootException()
+        if (userData.id == userId) throw BackstageDelToMeException()
+        if (userData.userGrade == 1 && userInfoById.userGrade >= 1) throw BackstageEditToRootException()
+
+
         // 删除只有本人绑定的图片数据
         userTableMapper.deleteById(userId)
         // 删除用户头像
@@ -129,13 +131,17 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         userImage: MultipartFile?
     ): JsonResult<Boolean> {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
-        val userData = verifyToken(token)
+        val userData = verifyToken(token).result!!
         // 这里可以限制 本账号不能修改本账号数据
         val userInfoById = userTableMapper.selectById(userId) ?: throw DataNulException()
-        if (userInfoById.userGrade == 2 && userLimit == true) throw BackstageLimitToRootException()
+        // 管理员禁止编辑 高于 1 的用户
+        if (userData.userGrade == 1 && userInfoById.userGrade >= 1 && userInfoById.id != userData.id) throw BackstageEditToRootException()
+        if (userData.id == userId && userLimit == true) throw BackstageLimitToRootException()
+        if (userData.id == userId && userGrade != null && userGrade != userData.userGrade) throw BackstageGradeToMeException()
+        if (userData.userGrade == 1 && userGrade != null && userGrade > 0 && userInfoById.id != userData.id) throw BackstageGradeToException()
+
         val oldLimit = userInfoById.userLimit
         val oldPassword = userInfoById.userPassword
-
 
         userInfoById.apply {
             if (!userPassword.isNullOrEmpty()) this.userPassword = userPassword
@@ -157,7 +163,12 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
             }
         }
         userTableMapper.updateById(userInfoById)
-        if (oldPassword != userInfoById.userPassword || oldLimit != userInfoById.userLimit){
+        // 修改密码后 后端也要下线
+        if (oldPassword != userInfoById.userPassword && userInfoById.userGrade == 2){
+            tokenServiceImpl.deleteByUserId(-userData.id)
+        }
+
+        if (oldPassword != userInfoById.userPassword || oldLimit != userInfoById.userLimit ){
             // 断开失效的ws
             // 通知前端下线
             tokenServiceImpl.deleteByUserId(userId)

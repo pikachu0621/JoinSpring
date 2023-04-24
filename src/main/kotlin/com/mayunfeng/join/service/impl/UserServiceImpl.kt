@@ -1,5 +1,6 @@
 package com.mayunfeng.join.service.impl
 
+import com.mayunfeng.join.base.BaseServiceException
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER

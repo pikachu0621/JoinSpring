@@ -24,8 +24,9 @@ interface IBackstageService {
 
     /**
      * 验证 Token   (需要验证用户等级,防止有人用普通用户token非法操作)
+     * @param needRoot 是否验证 root 用户 2
      */
-    fun verifyToken(token: String): JsonResult<UserTable>
+    fun verifyToken(token: String, needRoot: Boolean = false): JsonResult<UserTable>
 
 
 

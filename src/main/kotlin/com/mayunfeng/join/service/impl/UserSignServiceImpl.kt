@@ -69,8 +69,7 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
     override fun queryAllBySignId(signId: Long): JsonResult<UserSignAndStartSign> {
         if (OtherUtils.isFieldEmpty(signId)) throw ParameterException()
         startSignServiceImpl.verifySign(signId)
-        val queryByFieldList = SqlUtils.queryByFieldList(userSignTableMapper, "sign_id", signId)
-        if (queryByFieldList.isNullOrEmpty()) throw DataNulException()
+        val queryByFieldList = SqlUtils.queryByFieldList(userSignTableMapper, "sign_id", signId) ?: arrayListOf()
         queryByFieldList.forEach {
             it.userTable = userServiceImpl.userInfoById(it.userId)
         }
