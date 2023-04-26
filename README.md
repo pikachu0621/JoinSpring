@@ -36,7 +36,7 @@ vue管理端代码
 
 SpringBoot服务端代码
 ---
-[vue管理端](https://github.com/pikachu0621/MyfJoinSpring)
+[SpringBoot服务端](https://github.com/pikachu0621/MyfJoinSpring)
 
 ---
 
