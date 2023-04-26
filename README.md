@@ -30,9 +30,17 @@ FLUSH PRIVILEGES;
 
 ---
 
-Android代码
+Android端代码
 ---
 [Android端](https://github.com/pikachu0621/MyfJoinAndroid)
+
+vue管理端代码
+---
+[vue管理端](https://github.com/pikachu0621/MyfJoinVue)
+
+SpringBoot服务端代码
+---
+[vue管理端](https://github.com/pikachu0621/MyfJoinSpring)
 
 ---
 
@@ -75,17 +83,9 @@ config-websocket-path=/ws,/ws/*
 
 ---
 
-
 后台管理地址
-======
+---
 加上 ./admin/index.html
-
-vue管理界面部分效果图
-======
-
-|首页|管理用户|
-|:---:|:--:|
-| ![](/material/1.png) | ![](/material/2.png) |
 
 ---
 
