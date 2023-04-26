@@ -1,14 +1,6 @@
 myf_join
 ======
 
-
-API文档
--------
-[API文档](https://console-docs.apipost.cn/preview/9e608885058d3ede/38f1d8c9f866c1c9)
-
----
-
-
 食用方法
 ---
 >1. 下载安装`MySql`(版本 >`5.7.26`)并启动
@@ -29,6 +21,10 @@ FLUSH PRIVILEGES;
 >4. [下载](/jar/myf-join.zip)打包好的zip, 解压后点击 start.bat 即可
 
 ---
+
+API文档
+-------
+[API文档](https://console-docs.apipost.cn/preview/9e608885058d3ede/38f1d8c9f866c1c9)
 
 Android端代码
 ---
