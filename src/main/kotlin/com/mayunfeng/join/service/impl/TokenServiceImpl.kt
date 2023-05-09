@@ -7,6 +7,8 @@ import com.mayunfeng.join.model.TokenTable
 import com.mayunfeng.join.service.ITokenService
 import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.SqlUtils.deleteByField
+import com.mayunfeng.join.utils.SqlUtils.queryByFieldOne
 import com.mayunfeng.join.utils.TimeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -26,7 +28,7 @@ class TokenServiceImpl : BaseServiceImpl(), ITokenService {
     override fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTable {
         val createToken = OtherUtils.createToken(APPConfig.configSalt, "$userId", userAccount, userPassword, "$tokenTime")
         // 删除上一个用户绑定的数据
-        SqlUtils.deleteByField(tokenTableManager, "user_id", userId)
+        tokenTableManager.deleteByField("user_id", userId)
         logi("创建的token $createToken")
         return TokenTable(userId, createToken, tokenTime).apply {
             tokenTableManager.insert(this)
@@ -35,20 +37,20 @@ class TokenServiceImpl : BaseServiceImpl(), ITokenService {
 
 
     override fun queryByToken(token: String): TokenTable? {
-        return SqlUtils.queryByFieldOne(tokenTableManager, "token_login", token)
+        return tokenTableManager.queryByFieldOne("token_login", token)
     }
 
 
     override fun queryByUserId(userId: Long): TokenTable? {
-        return SqlUtils.queryByFieldOne(tokenTableManager, "user_id", userId)
+        return tokenTableManager.queryByFieldOne("user_id", userId)
     }
 
     override fun deleteByToken(token: String) {
-        SqlUtils.deleteByField(tokenTableManager, "token_login", token)
+        tokenTableManager.deleteByField("token_login", token)
     }
 
     override fun deleteByUserId(userId: Long) {
-        SqlUtils.deleteByField(tokenTableManager, "user_id", userId)
+        tokenTableManager.deleteByField("user_id", userId)
     }
 
 

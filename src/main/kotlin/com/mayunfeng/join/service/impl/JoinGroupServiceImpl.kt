@@ -14,6 +14,7 @@ import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.SqlUtils.queryByFieldList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import javax.servlet.http.HttpServletRequest
@@ -79,7 +80,7 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
     override fun queryUserJoinGroup(): JsonResult<Array<GroupTable>> {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
-        val joinGroupTables = SqlUtils.queryByFieldList(joinGroupTableMapper, "user_id", userId)
+        val joinGroupTables = joinGroupTableMapper.queryByFieldList("user_id", userId)
         if (joinGroupTables.isNullOrEmpty()) {
             return JsonResult.ok(arrayOf())
         }
@@ -112,7 +113,7 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
 
     override fun getJoinUserNum(groupId: Long): Int {
         groupTableMapper.selectById(groupId) ?: return 0
-        val queryByFieldList = SqlUtils.queryByFieldList(joinGroupTableMapper, "group_id", groupId)
+        val queryByFieldList = joinGroupTableMapper.queryByFieldList("group_id", groupId)
         if (queryByFieldList.isNullOrEmpty()) return 0
         return queryByFieldList.size
     }

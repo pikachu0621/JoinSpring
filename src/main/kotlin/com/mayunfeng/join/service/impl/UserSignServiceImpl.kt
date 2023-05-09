@@ -13,6 +13,8 @@ import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.SqlUtils.deleteByField
+import com.mayunfeng.join.utils.SqlUtils.queryByFieldList
 import com.mayunfeng.join.utils.TimeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -69,7 +71,7 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
     override fun queryAllBySignId(signId: Long): JsonResult<UserSignAndStartSign> {
         if (OtherUtils.isFieldEmpty(signId)) throw ParameterException()
         startSignServiceImpl.verifySign(signId)
-        val queryByFieldList = SqlUtils.queryByFieldList(userSignTableMapper, "sign_id", signId) ?: arrayListOf()
+        val queryByFieldList = userSignTableMapper.queryByFieldList("sign_id", signId) ?: arrayListOf()
         queryByFieldList.forEach {
             it.userTable = userServiceImpl.userInfoById(it.userId)
         }
@@ -151,7 +153,7 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
 
     override fun delUserSignBySign(signId: Long) {
         startSignServiceImpl.verifySign(signId)
-        SqlUtils.deleteByField(userSignTableMapper, "sign_id", signId)
+        userSignTableMapper.deleteByField( "sign_id", signId)
     }
 
 
@@ -159,7 +161,7 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
      * 获取总人数
      */
     fun getTotalNumberOfPeople(signId: Long): Int {
-        val queryByFieldList = SqlUtils.queryByFieldList(userSignTableMapper, "sign_id", signId)
+        val queryByFieldList = userSignTableMapper.queryByFieldList("sign_id", signId)
         if (queryByFieldList.isNullOrEmpty()) return 0
         return queryByFieldList.size
     }

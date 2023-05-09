@@ -1,6 +1,5 @@
 package com.mayunfeng.join.service.impl
 
-import com.mayunfeng.join.base.BaseServiceException
 import com.mayunfeng.join.base.BaseServiceImpl
 import com.mayunfeng.join.config.AppConfig
 import com.mayunfeng.join.config.TOKEN_PARAMETER
@@ -10,7 +9,8 @@ import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
-import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.SqlUtils.delImageFile
+import com.mayunfeng.join.utils.SqlUtils.queryByFieldOne
 import com.mayunfeng.join.utils.TimeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ResourceLoader
@@ -53,7 +53,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         userAccount!!
         userPassword!!
         if (OtherUtils.isFieldIllegal(userAccount, userPassword)) throw ParameterIllegalException()
-        var userData = SqlUtils.queryByFieldOne(userTableMapper, "user_account", userAccount)
+        var userData = userTableMapper.queryByFieldOne("user_account", userAccount)
         // 注册
         if (userData == null) {
             if (userAccount.length > APPConfig.configMaxLength || userAccount.length < APPConfig.configMinLength) throw UserAccountLengthException()
@@ -68,7 +68,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
             )
         }
         // 登录
-        userData = SqlUtils.queryByFieldOne(userTableMapper, "user_account", userAccount)
+        userData = userTableMapper.queryByFieldOne("user_account", userAccount)
         // 验证长度
         if (userData!!.userPassword != userPassword) throw UserPasswordException()
         if (userData.userLimit) throw UserBlacklistException()
@@ -128,7 +128,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                     arrayOf(userImage)
                 ) {
                     // 删除只有本人绑定的图片数据
-                    SqlUtils.delImageFile(userTableMapper, "user_img", it.userImg, "${APPConfig.configUserImageFilePath()}${it.userImg}")
+                    userTableMapper.delImageFile("user_img", it.userImg, "${APPConfig.configUserImageFilePath()}${it.userImg}")
                     it.userImg = pictureServiceImpl.upImage(userImage).result!!
                 })
         )

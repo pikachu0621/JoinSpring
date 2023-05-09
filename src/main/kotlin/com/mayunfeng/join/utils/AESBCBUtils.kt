@@ -1,5 +1,6 @@
 package com.mayunfeng.join.utils
 
+import com.mayunfeng.join.utils.MD5Utils.getStringMd5
 import java.nio.charset.StandardCharsets
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -17,8 +18,8 @@ object AESBCBUtils {
 
     fun init(aesKey: String) {
         val coding = "UTF-8"
-        val key = MD5Utils.md5(aesKey, true)
-        val iv = MD5Utils.md5(key!!.substring(0, 8), true)
+        val key = aesKey.getStringMd5(true)
+        val iv = key!!.substring(0, 8).getStringMd5(true)
         try {
             ivs = IvParameterSpec(iv!!.toByteArray(charset(coding)))
             keys = SecretKeySpec(key.toByteArray(charset(coding)), "AES")
@@ -33,10 +34,10 @@ object AESBCBUtils {
      * @param value str
      * @return str
      */
-    fun encrypt(value: String): String? {
+    fun String.aesEncrypt(): String? {
         return try {
             cipher.init(Cipher.ENCRYPT_MODE, keys, ivs)
-            bytesToHexStr(cipher.doFinal(value.toByteArray(StandardCharsets.UTF_8)))
+            bytesToHexStr(cipher.doFinal(this.toByteArray(StandardCharsets.UTF_8)))
         } catch (e: Exception) {
             null
         }
@@ -50,10 +51,10 @@ object AESBCBUtils {
      * @param encrypted str
      * @return str
      */
-    fun decrypt(encrypted: String): String? {
+    fun String.aesDecrypt(): String? {
         return try {
             cipher.init(Cipher.DECRYPT_MODE, keys, ivs)
-            val decode = hexStrToBytes(encrypted)
+            val decode = hexStrToBytes(this)
            String(cipher.doFinal(decode))
         } catch (_: Exception){
             null

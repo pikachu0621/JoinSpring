@@ -12,6 +12,8 @@ import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.SqlUtils.delImageFile
+import com.mayunfeng.join.utils.SqlUtils.queryByFieldOne
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -51,7 +53,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
 
     override fun loginRoot(rootAccount: String, rootPassword: String): JsonResult<UserTable> {
         val userData =
-            SqlUtils.queryByFieldOne(userTableMapper, "user_account", rootAccount) ?: throw UserNulException()
+            userTableMapper.queryByFieldOne("user_account", rootAccount) ?: throw UserNulException()
         if (userData.userPassword != rootPassword) throw UserPasswordException()
 
         if (userData.userLimit) throw UserBlacklistException()
@@ -109,7 +111,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         // 删除只有本人绑定的图片数据
         userTableMapper.deleteById(userId)
         // 删除用户头像
-        SqlUtils.delImageFile(userTableMapper, "user_img", userInfoById.userImg, "${APPConfig.configUserImageFilePath()}${userInfoById.userImg}")
+        userTableMapper.delImageFile("user_img", userInfoById.userImg, "${APPConfig.configUserImageFilePath()}${userInfoById.userImg}")
         groupServiceImpl.deleteGroupByUserId(userId)
         // 断开失效的ws
         // 通知前端下线
@@ -153,8 +155,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
             if (userGrade != null && userGrade >= 0 && userGrade <= 3) this.userGrade = userGrade
             if (userLimit != null ) this.userLimit = userLimit
             if (!(userImage == null || userImage.isEmpty || userImage.size <= 10)) {
-                SqlUtils.delImageFile(
-                    userTableMapper,
+                userTableMapper.delImageFile(
                     "user_img",
                     this.userImg,
                     "${APPConfig.configUserImageFilePath()}${this.userImg}"

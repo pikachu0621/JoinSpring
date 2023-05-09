@@ -1,6 +1,8 @@
 package com.mayunfeng.join.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.mayunfeng.join.utils.AESBCBUtils.aesDecrypt
+import com.mayunfeng.join.utils.AESBCBUtils.aesEncrypt
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.ServerHttpRequest
@@ -108,7 +110,7 @@ object OtherUtils {
     fun createTimeAESBCB(salt: String): String {
         val t = (Timestamp(System.currentTimeMillis()).time / 1000).toString()
         val r = Random.nextInt(100001, 200000).toString()
-        return AESBCBUtils.encrypt("s=${salt}&t=$t&r=$r")!!
+        return "s=${salt}&t=$t&r=$r".aesEncrypt()!!
     }
 
     /**
@@ -117,7 +119,7 @@ object OtherUtils {
      */
     fun createTimeAESBCB(time: Long, aesStr: String): Boolean {
         val atTime = Timestamp(System.currentTimeMillis()).time / 1000
-        val decrypt = AESBCBUtils.decrypt(aesStr) ?: return false
+        val decrypt = aesStr.aesDecrypt() ?: return false
         val parsingUrlParameter = getParsingUrlParameter("?$decrypt", "t") ?: return false
         return try {
             atTime - parsingUrlParameter.toLong() <= time

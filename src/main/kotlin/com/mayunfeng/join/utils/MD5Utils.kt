@@ -13,22 +13,22 @@ import java.security.NoSuchAlgorithmException
 object MD5Utils {
 
     @JvmStatic
-    fun getMd5(file: File): String? {
+    fun File.getFileMd5(): String? {
         return try {
-            DigestUtils.md5DigestAsHex(FileInputStream(file));
+            DigestUtils.md5DigestAsHex(FileInputStream(this));
         } catch (_: Exception) { null }
     }
 
 
     @JvmStatic
-    fun getMd5(path: String): String? {
-        return getMd5(ResourceUtils.getFile(path))
+    fun String.getFileMd5(): String? {
+        return ResourceUtils.getFile(this).getFileMd5()
     }
 
     @JvmStatic
-    fun getMd5(file: MultipartFile): String? {
+    fun MultipartFile.getFileMd5(): String? {
         return try {
-            val digest = MessageDigest.getInstance("MD5").digest(file.bytes)
+            val digest = MessageDigest.getInstance("MD5").digest(this.bytes)
             BigInteger(1, digest).toString(16);
         } catch (_: Exception) {
             null
@@ -43,13 +43,13 @@ object MD5Utils {
      * @param is16      是否为16位长度
      * @return MD5
      */
-    fun md5(sourceStr: String, is16: Boolean): String? {
+    fun String.getStringMd5(is16: Boolean): String? {
         var md532: String? = null
         var md516: String? = null
         val result: String
         try {
             val md: MessageDigest = MessageDigest.getInstance("MD5")
-            md.update(sourceStr.toByteArray())
+            md.update(this.toByteArray())
             val b: ByteArray = md.digest()
             var i: Int
             val buf = StringBuilder()

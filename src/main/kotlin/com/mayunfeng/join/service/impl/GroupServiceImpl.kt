@@ -18,6 +18,9 @@ import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
 import com.mayunfeng.join.utils.OtherUtils.isNumber
 import com.mayunfeng.join.utils.SqlUtils
+import com.mayunfeng.join.utils.SqlUtils.delImageFile
+import com.mayunfeng.join.utils.SqlUtils.deleteByField
+import com.mayunfeng.join.utils.SqlUtils.queryByFieldList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
@@ -90,7 +93,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         if( OtherUtils.isFieldEmpty(id)) throw ParameterException()
         val userId = verifyGroup(id!!)
         val groupTable = groupTableMapper.selectById(id)
-        SqlUtils.delImageFile(groupTableMapper, "group_img", groupTable.groupImg, "${APPConfig.configUserImageFilePath()}${groupTable.groupImg}")
+        groupTableMapper.delImageFile("group_img", groupTable.groupImg, "${APPConfig.configUserImageFilePath()}${groupTable.groupImg}")
         // 删除所有加入此组的用户记录
         joinGroupTableMapper.delete(QueryWrapper<JoinGroupTable>().apply{
             eq("group_id", id)
@@ -104,18 +107,18 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val user = userTableMapper.selectById(-tokenServiceImpl.queryByToken(token)!!.userId) ?: throw DataNulException()
         if (user.userGrade == 0) throw GroupUserAuthorityEditException()
-        val queryByFieldList = SqlUtils.queryByFieldList(groupTableMapper, "user_id", userId) ?: return
+        val queryByFieldList = groupTableMapper.queryByFieldList("user_id", userId) ?: return
         // 先删除该用户加入的组
-        SqlUtils.deleteByField(joinGroupTableMapper, "user_id", userId)
+        joinGroupTableMapper.deleteByField("user_id", userId)
         // 再删除该用户创建的组
-        SqlUtils.deleteByField(joinGroupTableMapper, "user_id", userId)
+        joinGroupTableMapper.deleteByField("user_id", userId)
         // 然后删除该用户的签到任务
-        SqlUtils.deleteByField(userSignTableMapper, "user_id", userId)
+        userSignTableMapper.deleteByField("user_id", userId)
         // 最后删除该用户创建的组
         queryByFieldList.forEach {
-            SqlUtils.delImageFile(groupTableMapper, "group_img", it.groupImg, "${APPConfig.configUserImageFilePath()}${it.groupImg}")
+            groupTableMapper.delImageFile("group_img", it.groupImg, "${APPConfig.configUserImageFilePath()}${it.groupImg}")
             // 删除所有加入此组的用户记录
-            SqlUtils.deleteByField(joinGroupTableMapper, "group_id", it.id)
+            joinGroupTableMapper.deleteByField("group_id", it.id)
             groupTableMapper.deleteById(it.id)
         }
     }
@@ -136,7 +139,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         val groupTable = groupTableMapper.selectById(id).apply {
             if (img != null){
                 // 删除只有本人绑定的图片数据
-                SqlUtils.delImageFile(groupTableMapper, "group_img", this.groupImg, "${APPConfig.configUserImageFilePath()}${this.groupImg}")
+                groupTableMapper.delImageFile("group_img", this.groupImg, "${APPConfig.configUserImageFilePath()}${this.groupImg}")
                 this.groupImg = pictureServiceImpl.upImage(img).result!!
             }
             if (!name.isNullOrEmpty()) this.groupName = name
@@ -213,7 +216,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
      * 获取该用户创建的所有群
      */
     fun readUserListGroup(userId: Long): Array<GroupTable> {
-        var queryByFieldList = SqlUtils.queryByFieldList(groupTableMapper, "user_id", userId)
+        var queryByFieldList = groupTableMapper.queryByFieldList("user_id", userId)
         if (queryByFieldList.isNullOrEmpty()) queryByFieldList = arrayListOf()
         queryByFieldList.forEach {
             disposeReturnData(it)

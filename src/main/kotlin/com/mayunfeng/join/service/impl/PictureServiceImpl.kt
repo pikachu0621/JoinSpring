@@ -6,6 +6,7 @@ import com.mayunfeng.join.config.TOKEN_PARAMETER
 import com.mayunfeng.join.mapper.UserTableMapper
 import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.*
+import com.mayunfeng.join.utils.MD5Utils.getFileMd5
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
@@ -58,7 +59,7 @@ class PictureServiceImpl : BaseServiceImpl(), IPictureService {
         }
         if (imageFile.size > ByteUtils.mb2Byte(APPConfig.configImageSize.toBigDecimal())) throw FileMaxException()
 
-        val imageName = "${MD5Utils.getMd5(imageFile)}.png"
+        val imageName = "${imageFile.getFileMd5()}.png"
         val nameUserImageFilePath = "${APPConfig.configUserImageFilePath()}$imageName"
         // logi(nameUserImageFilePath)
 
