@@ -16,14 +16,26 @@ repositories {
 }
 
 dependencies {
+
+    //  ========================spring=====================================
     // spring web
     implementation("org.springframework.boot:spring-boot-starter-web")
     // spring websocket
     implementation("org.springframework.boot:spring-boot-starter-websocket")
-    // kotlin
+    //  ========================spring=====================================
+
+
+    //  ========================kotlin=====================================
+    // kotlin json解析
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    // kotlin 反射库
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    // kotlin 核心库
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    //  ========================kotlin=====================================
+
+
+    //  ========================其他=====================================
     // mybatis-plus 数据持久层
     implementation("com.baomidou:mybatis-plus-boot-starter:3.4.2")
     // 支持 webp 文件解码
@@ -34,7 +46,12 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // mysql 连接器
     runtimeOnly("mysql:mysql-connector-java")
+    //  ========================其他=====================================
+
+
+    //  ========================测试=====================================
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    //  ========================测试=====================================
 }
 
 tasks.withType<Test> {

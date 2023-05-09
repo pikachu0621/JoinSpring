@@ -111,6 +111,7 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
         val startSignTable = startSignTableMapper.selectById(signId) ?: throw StartSignNulException()
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
+        // 越权判断
         if (startSignTable.userId != userId) throw StartSignUserAuthorityEditException()
         return userId
     }

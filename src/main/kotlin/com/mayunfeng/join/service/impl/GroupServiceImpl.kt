@@ -204,9 +204,10 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
         if (userId < 0){
-            val userData =  userTableMapper.selectById(userId) ?: throw DataNulException()
+            val userData =  userTableMapper.selectById(-userId) ?: throw DataNulException()
             if (userData.userGrade == 2) return userId
         }
+        // 越权判断
         if (groupTable.userId != userId) throw GroupUserAuthorityEditException()
         return userId
     }

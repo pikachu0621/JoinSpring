@@ -41,9 +41,8 @@ interface IStartSignService {
      * 根据 signId 获取数据
      * @param signId id
      */
-    fun queryStartSignInfoById(signId: Long): StartSignTable {
-        return StartSignTable()
-    }
+    fun queryStartSignInfoById(signId: Long): StartSignTable = StartSignTable()
+
 
 
 

@@ -36,9 +36,7 @@ class StartContextTask : ApplicationContextAware, BaseCls() {
 
     fun createUserDir(){
         val file = File(APPConfig.configUserImageFilePath())
-        if (!file.exists()) {
-           file.mkdirs()
-        }
+        if (!file.exists()) file.mkdirs()
     }
 
 }
