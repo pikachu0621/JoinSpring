@@ -1,1 +1,1 @@
-rootProject.name = "MyfJoin"
+rootProject.name = "JoinSpring"
