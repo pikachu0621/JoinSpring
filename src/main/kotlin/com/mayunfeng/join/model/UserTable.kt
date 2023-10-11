@@ -2,12 +2,10 @@ package com.mayunfeng.join.model
 
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
 import java.io.Serializable
-import kotlin.system.exitProcess
 
 
 /**
@@ -52,11 +50,11 @@ data class UserTable(
 
 
     @Column(
-        comment = "用户姓名",
+        comment = "用户昵称",
         isNull = true,
         defaultValue = "default"
     )
-    var userName: String? = "default",
+    var userNickname: String? = "default",
 
 
     @Column(
@@ -104,7 +102,17 @@ data class UserTable(
     var userLimit: Boolean = false,
 
 
+    @Column(
+        comment = "是否公开资料  0 = false = 不公开  1 = true = 公开",
+        type = MySqlTypeConstant.INT,
+        isNull = false,
+        length = 1,
+        defaultValue = "1"
+    )
+    var userOpenProfile: Boolean = true,
+
+
     @TableField(exist = false)
     var loginToken: String? = null,
 
-) : BaseTable(), Serializable
+    ) : BaseTable(), Serializable

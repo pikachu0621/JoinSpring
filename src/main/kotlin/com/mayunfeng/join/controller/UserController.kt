@@ -50,10 +50,10 @@ class UserController : BaseController(), IUserService {
     ): JsonResult<UserTable> = userServiceImpl.editImage(userImage)
 
 
-    @GetMapping("/edit-name")
-    override fun editName(
-        @RequestParam("name", required = false) userName: String?
-    ): JsonResult<UserTable> = userServiceImpl.editName(userName)
+    @GetMapping("/edit-nickname")
+    override fun editNickName(
+        @RequestParam("nickname", required = false) userNickName: String?
+    ): JsonResult<UserTable> = userServiceImpl.editNickName(userNickName)
 
 
     @GetMapping("/edit-sex")
@@ -86,5 +86,11 @@ class UserController : BaseController(), IUserService {
         @RequestParam("old-password", required = false) userOldPassword: String?,
         @RequestParam("new-password", required = false) userNewPassword: String?,
     ): JsonResult<UserTable> = userServiceImpl.editPassword(userOldPassword, userNewPassword)
+
+    @GetMapping("/edit-open")
+    override fun editOpen(@RequestParam("open", required = false) isOpen: Boolean?): JsonResult<UserTable>  = userServiceImpl.editOpen()
+
+    @GetMapping("/out-login")
+    override fun outLogin(): JsonResult<Boolean> = userServiceImpl.outLogin()
 
 }

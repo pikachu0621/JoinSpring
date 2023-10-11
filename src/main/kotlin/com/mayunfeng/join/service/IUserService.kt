@@ -58,9 +58,9 @@ interface IUserService {
      * 修改姓名
      * 需要token
      *
-     * @param userName 用户姓名
+     * @param userNickName 用户昵称
      */
-    fun editName(userName: String?): JsonResult<UserTable>
+    fun editNickName(userNickName: String?): JsonResult<UserTable>
 
 
     /**
@@ -110,4 +110,15 @@ interface IUserService {
      */
     fun editPassword(userOldPassword: String?, userNewPassword: String?): JsonResult<UserTable>
 
+    /**
+     * 修改用户信息开放
+     * @param isOpen 是否开放
+     */
+    fun editOpen(isOpen: Boolean? = null): JsonResult<UserTable>
+
+
+    /**
+     * 退出登录
+     */
+    fun outLogin(): JsonResult<Boolean>
 }

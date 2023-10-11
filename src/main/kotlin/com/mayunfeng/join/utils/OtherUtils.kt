@@ -1,6 +1,7 @@
 package com.mayunfeng.join.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.mayunfeng.join.config.TOKEN_PARAMETER
 import com.mayunfeng.join.utils.AESBCBUtils.aesDecrypt
 import com.mayunfeng.join.utils.AESBCBUtils.aesEncrypt
 import org.springframework.http.HttpHeaders
@@ -102,7 +103,6 @@ object OtherUtils {
     }
 
 
-
     /**
      * 创建 加密时间
      * @param isForever == true 为永久  默认  false
@@ -166,13 +166,16 @@ object OtherUtils {
      * 获取 请求头 或 参数上必须的参数
      *
      */
-    fun getMustParameter(request: HttpServletRequest, k: String): String? {
-        var token = request.getParameter(k)
-        if(isFieldEmpty(token)){
-            token = request.getHeader(k)
+    fun getMustParameter(request: HttpServletRequest, k: String): String? =
+        try {
+            var token = request.getParameter(k)
+            if (isFieldEmpty(token)) {
+                token = request.getHeader(k)
+            }
+            token
+        } catch (_: Exception) {
+            null
         }
-        return token
-    }
 
 
     /**
@@ -181,14 +184,12 @@ object OtherUtils {
      */
     fun getMustParameter(uri: URI?, httpHeaders: HttpHeaders, k: String): String? {
         var token: String? = httpHeaders[k]?.component1()
-        if (token == null && uri != null){
-            if(uri.path.isNullOrEmpty()) return null
+        if (token == null && uri != null) {
+            if (uri.path.isNullOrEmpty()) return null
             token = uri.path.substringAfterLast("/")
         }
         return token
     }
-
-
 
 
     /**

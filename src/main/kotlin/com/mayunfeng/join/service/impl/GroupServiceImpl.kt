@@ -247,9 +247,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
             if (APPConfig.configImageTime != -1L) {
                 val createTimeAESBCB = OtherUtils.createTimeAESBCB(APPConfig.configSalt)
                 "?c=$createTimeAESBCB"
-            } else {
-                ""
-            }
+            } else ""
         }"
         // 该组人数
         // 该组前4名

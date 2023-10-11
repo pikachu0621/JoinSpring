@@ -11,7 +11,6 @@ import com.mayunfeng.join.model.UserTable
 import com.mayunfeng.join.service.*
 import com.mayunfeng.join.utils.JsonResult
 import com.mayunfeng.join.utils.OtherUtils
-import com.mayunfeng.join.utils.SqlUtils
 import com.mayunfeng.join.utils.SqlUtils.delImageFile
 import com.mayunfeng.join.utils.SqlUtils.queryByFieldOne
 import org.springframework.beans.factory.annotation.Autowired
@@ -124,7 +123,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         userId: Long,
         userPassword: String?,
         userSex: Boolean?,
-        userName: String?,
+        userNickname: String?,
         userUnit: String?,
         userBirth: String?,
         userIntroduce: String?,
@@ -148,7 +147,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         userInfoById.apply {
             if (!userPassword.isNullOrEmpty()) this.userPassword = userPassword
             if (userSex != null ) this.userSex = userSex
-            if (!userName.isNullOrEmpty()) this.userName = userName
+            if (!userNickname.isNullOrEmpty()) this.userNickname = userNickname
             if (!userUnit.isNullOrEmpty()) this.userUnit = userUnit
             if (!userBirth.isNullOrEmpty()) this.userBirth = userBirth
             if (!userIntroduce.isNullOrEmpty()) this.userIntroduce = userIntroduce

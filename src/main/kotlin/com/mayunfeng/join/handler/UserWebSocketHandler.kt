@@ -45,7 +45,7 @@ class UserWebSocketHandler: TextWebSocketHandler()  {
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val token = OtherUtils.getMustParameter(session.uri, session.handshakeHeaders, TOKEN_PARAMETER)!!
         val userInfo = userServiceImpl.userInfoById(tokenServiceImpl.queryByToken(token)!!.userId)
-        log.info("    >>用户 ${userInfo.userName} 说：${message.payload}")
+        log.info("    >>用户 ${userInfo.userNickname} 说：${message.payload}")
         // session.sendMessage(TextMessage(ObjectMapper().writeValueAsString(userInfo)))
     }
 
@@ -58,8 +58,8 @@ class UserWebSocketHandler: TextWebSocketHandler()  {
         sessionPools[token] = session
         addOnlineCount()
 
-        log.info("[*]用户 ${userInfo.userName} 已上线, 当前在线人数$onlineNum")
-        // session.sendMessage(TextMessage("[*]用户 ${userInfo.userName} 已上线, 当前在线人数$onlineNum"))
+        log.info("[*]用户 ${userInfo.userNickname} 已上线, 当前在线人数$onlineNum")
+        // session.sendMessage(TextMessage("[*]用户 ${userInfo.userNickname} 已上线, 当前在线人数$onlineNum"))
     }
 
 
@@ -76,7 +76,7 @@ class UserWebSocketHandler: TextWebSocketHandler()  {
         } else {
             // 正常下线
             val userInfo = userServiceImpl.userInfoById(queryByToken.userId)
-            log.info("[*]用户 ${userInfo.userName} 已下线, 当前在线人数$onlineNum")
+            log.info("[*]用户 ${userInfo.userNickname} 已下线, 当前在线人数$onlineNum")
         }
 
 

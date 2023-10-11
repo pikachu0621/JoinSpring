@@ -73,7 +73,7 @@ interface IBackstageService {
         userId: Long,
         userPassword: String?,
         userSex: Boolean?,
-        userName: String?,
+        userNickname: String?,
         userUnit: String?,
         userBirth: String?,
         userIntroduce: String?,

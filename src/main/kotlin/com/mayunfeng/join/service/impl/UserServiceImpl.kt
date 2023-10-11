@@ -98,15 +98,15 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     override fun userImage(c: String?, userId: Long?): BufferedImage {
         var userBen: UserTable?
         val tokenBen = tokenServiceImpl.queryByToken(OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!)
-        userBen = if (userId != null && userId != -1L){
+        userBen = if (userId != null && userId != -1L) {
             userTableMapper.selectById(userId)
         } else {
             userTableMapper.selectById(tokenBen!!.userId)
         }
-        if (userBen == null){
+        if (userBen == null) {
             userBen = userTableMapper.selectById(tokenBen!!.userId)
         }
-        return if(userBen!!.userImg == APPConfig.configDefaultPicName ){
+        return if (userBen!!.userImg == APPConfig.configDefaultPicName) {
             if (userBen.userSex!!)
                 ImageIO.read(resourceLoader.getResource(APPConfig.configDefaultPicBoy).inputStream)
             else
@@ -128,20 +128,24 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                     arrayOf(userImage)
                 ) {
                     // 删除只有本人绑定的图片数据
-                    userTableMapper.delImageFile("user_img", it.userImg, "${APPConfig.configUserImageFilePath()}${it.userImg}")
+                    userTableMapper.delImageFile(
+                        "user_img",
+                        it.userImg,
+                        "${APPConfig.configUserImageFilePath()}${it.userImg}"
+                    )
                     it.userImg = pictureServiceImpl.upImage(userImage).result!!
                 })
         )
 
 
-    override fun editName(userName: String?): JsonResult<UserTable> =
+    override fun editNickName(userNickName: String?): JsonResult<UserTable> =
         JsonResult.ok(
             disposeReturnUserData(
                 editOneSqlValue(
                     OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!,
-                    arrayOf(userName)
+                    arrayOf(userNickName)
                 ) {
-                    it.userName = userName
+                    it.userNickname = userNickName
                 })
         )
 
@@ -222,10 +226,26 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         )
     }
 
+    override fun editOpen(isOpen: Boolean?): JsonResult<UserTable> = JsonResult.ok(
+        disposeReturnUserData(
+            editOneSqlValue(
+                OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
+            ) {
+                it.userOpenProfile = isOpen ?: !it.userOpenProfile
+            })
+    )
 
-
-
-
+    override fun outLogin(): JsonResult<Boolean> {
+        val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)
+        return JsonResult.ok(
+            if (token.isNullOrEmpty()) {
+                false
+            } else {
+                tokenServiceImpl.deleteByToken(token)
+                true
+            }
+        )
+    }
 
 
     /**
@@ -234,15 +254,13 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
      * @param isAddUserId 是否添加 userid  用在不是当前用户查询别的用户头像
      *
      */
-     fun disposeReturnUserData(userData: UserTable, isAddUserId: Boolean = false): UserTable {
+    fun disposeReturnUserData(userData: UserTable, isAddUserId: Boolean = false): UserTable {
         // 限制时间
         // 可以不加 userData.userImg 直接根据 用户token 获取   但是防止前端缓存 要加上
-        if(userData.userImg == APPConfig.configDefaultPicName){
-            userData.userImg = if (userData.userSex!!){
-                APPConfig.configDefaultPicName + "_boy"
-            } else {
-                APPConfig.configDefaultPicName + "_girl"
-            }
+        if (userData.userImg == APPConfig.configDefaultPicName) {
+            userData.userImg = APPConfig.configDefaultPicName +
+                    if (userData.userSex!!) "_boy"
+                    else APPConfig.configDefaultPicName + "_girl"
         }
         userData.userImg = "/myf-user-api/user-img/${userData.userImg}${
             if (APPConfig.configImageTime != -1L) {
@@ -257,6 +275,25 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
             userData.userBirth,
             TimeUtils.getCurrentTime("yyyy-MM-dd")
         )
+        val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)
+        if (token.isNullOrEmpty()) return userData
+        var userId = tokenServiceImpl.queryByToken(token)!!.userId
+        if (userId < 0) userId = -userId
+        val loginUser = userTableMapper.selectById(userId)
+        if (!userData.userOpenProfile  // 用户是否开放资料
+            && userData.id != userId // 请求用户是不是自己
+            && loginUser.userGrade <= 0
+        ) { // 请求用户是否为管理员
+            userData.userSex = null
+            userData.userUnit = null
+            userData.userBirth = ""
+            userData.userAge = null
+            userData.userIntroduce = null
+            userData.userGrade = 0
+            userData.userLimit = false
+            userData.userPassword = ""
+            userData.loginToken = null
+        }
         return userData
     }
 
