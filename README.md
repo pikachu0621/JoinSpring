@@ -1,4 +1,4 @@
-pk_join
+JoinSpring
 ======
 
 食用方法
@@ -28,15 +28,15 @@ API文档
 
 Android端代码
 ---
-[Android端](https://github.com/pikachu0621/MyfJoinAndroid)
+[Android端](https://github.com/pikachu0621/JoinAndroid)
 
 vue管理端代码
 ---
-[vue管理端](https://github.com/pikachu0621/MyfJoinVue)
+[vue管理端](https://github.com/pikachu0621/JoinVue)
 
 SpringBoot服务端代码
 ---
-[SpringBoot服务端](https://github.com/pikachu0621/MyfJoinSpring)
+[SpringBoot服务端](https://github.com/pikachu0621/JoinSpring)
 
 ---
 
@@ -81,10 +81,10 @@ config-websocket-path=/ws,/ws/*
 
 后台管理地址
 ---
-加上 ./admin/index.html
+127.0.0.1:8012/admin/index.html
 
 ---
 
-By: pkpk
+WechatBy: pkpk-run
 ===
 
