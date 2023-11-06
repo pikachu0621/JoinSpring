@@ -18,7 +18,7 @@ CREATE USER 'pk_join'@'localhost' IDENTIFIED BY '123456';
 GRANT ALL ON pk_join.* TO 'pk_join'@'localhost' IDENTIFIED BY '123456' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
->4. [下载](/jar/pk-join.zip)打包好的zip, 解压后点击 start.bat 即可
+>4. [下载](/jar/JoinSpring-0.0.3.jar)打包好的jar ```java -jar 'JoinSpring-0.0.3.jar```' 即可
 
 ---
 
