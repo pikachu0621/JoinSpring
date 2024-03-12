@@ -1,6 +1,7 @@
 package com.pkpk.join.service.impl
 
 import com.pkpk.join.base.BaseServiceImpl
+import com.pkpk.join.config.AppConfig
 import com.pkpk.join.config.TOKEN_PARAMETER
 import com.pkpk.join.mapper.StartSignTableMapper
 import com.pkpk.join.model.StartSignTable
@@ -10,8 +11,6 @@ import com.pkpk.join.utils.OtherUtils
 import com.pkpk.join.utils.TimeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.sql.Time
-import java.util.UUID
 import javax.servlet.http.HttpServletRequest
 
 @Service
@@ -34,10 +33,17 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
     private lateinit var userServiceImpl: UserServiceImpl
 
     @Autowired
+    private lateinit var userLogServiceImpl: UserLogServiceImpl
+
+    @Autowired
+    private lateinit var appConfig: AppConfig
+
+    @Autowired
     private lateinit var request: HttpServletRequest
 
     @Autowired
     private lateinit var startSignTableMapper: StartSignTableMapper
+
 
 
     override fun startSign(
@@ -57,7 +63,7 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
         val queryJoinGroupAllUser = joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
         if ((queryJoinGroupAllUser.result!!.result!!.size <= 1)) throw StartSignNulAddUserEditException()
 
-        if (signType == 2) {
+        if (signType == IStartSignService.SignType.SIGN_CODE.type) {
             signKeyNul = OtherUtils.createTimeMd5()
         }
         val startSignTable = StartSignTable(
@@ -71,6 +77,7 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
         )
         startSignTableMapper.insert(startSignTable)
         userSignServiceImpl.notifyUserSign(groupId, startSignTable.id)
+        userLogServiceImpl.addLogLogin("签到完成")
         return JsonResult.ok(startSignTableMapper.selectById(startSignTable))
     }
 
@@ -95,6 +102,7 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
         verifySign(signId)
         userSignServiceImpl.delUserSignBySign(signId)
         startSignTableMapper.deleteById(signId)
+        userLogServiceImpl.addLogLogin("删除签到")
         return getSignAllInfoListByUserId()
     }
 

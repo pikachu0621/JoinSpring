@@ -7,6 +7,7 @@ class ParameterIllegalException : BaseServiceException(-2, "参数包含违法�
 // token  -3 要与前端对应
 class TokenFailureException : BaseServiceException(-3, "您没有权限访问")
 class DataNulException : BaseServiceException(-4, "数据错误")
+class AppOffException : BaseServiceException(-5, "API接口已关闭")
 
 // user
 class UserPasswordException : BaseServiceException(-101, "密码或账号错误")
@@ -37,6 +38,7 @@ class FileSendTypeException : BaseServiceException(-605, "文件上传失败,格
 // 创建 group
 class GroupNameLengthException : BaseServiceException(-701, "名字长度请保持在 (1~20)")
 class GroupIrdLengthException : BaseServiceException(-702, "介绍长度请保持在 (1~100)")
+class GroupPwsLengthException : BaseServiceException(-702, "密码长度为 (4)")
 class GroupTypeException : BaseServiceException(-703, "此类型不存在")
 class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没有操作权限 (恶意调用api将会封禁您的账号)")
 class GroupNulException : BaseServiceException(-705, "此组不存在")
@@ -67,4 +69,11 @@ class BackstageDelToMeException : BaseServiceException(-1004, "不能删除自�
 class BackstageGradeToMeException : BaseServiceException(-1004, "不能设置自己的等级！")
 class BackstageGradeToException : BaseServiceException(-1005, "您无权设置用户等级！")
 class BackstageEditToRootException : BaseServiceException(-1006, "您无权操作此用户！")
+class BackstageEditAppConfigException : BaseServiceException(-1007, "时效不能为小于-1并且不能等于0！")
+class BackstageEditAppConfigSizeException : BaseServiceException(-1008, "大小MB不能小于1！")
+class BackstageEditAppConfigAccountLengthLimitException : BaseServiceException(-1009, "集合size不能大于2并且集合数值要大于0，且集合值1要小于集合值2")
 
+
+
+// log
+class LogTokenUnl : BaseServiceException(-1002, "请勿在公开接口内使用log服务！")

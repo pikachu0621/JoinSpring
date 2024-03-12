@@ -2,9 +2,10 @@ package com.pkpk.join.model
 
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
+import com.pkpk.join.config.TABLE_JOIN_GROUP
 import java.io.Serializable
 
-@TableName("pk_join_group_table")
+@TableName(TABLE_JOIN_GROUP)
 data class JoinGroupTable (
 
     @Column(

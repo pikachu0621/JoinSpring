@@ -1,0 +1,11 @@
+{
+  "appPackageName": "com.pkpk.join",
+  "appIsRemove": false,
+  "tokenSalt": "com.pkpk.join",
+  "tokenTime": -1,
+  "imageSize": 20,
+  "imageTime": -1,
+  "imagePassword": "pkpk",
+  "userAccountLengthLimit": [6, 12],
+  "groupTypeArr": ["会议组","课堂组","公司组","学校组","培训组","活动组","其它"]
+}

@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
+import com.pkpk.join.config.TABLE_USER_SIGN
 import java.io.Serializable
 
 /**
  * 用户待签到表
  *
  */
-@TableName("pk_user_sign_table")
+@TableName(TABLE_USER_SIGN)
 class UserSignTable(
 
 

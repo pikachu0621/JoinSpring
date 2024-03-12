@@ -1,6 +1,8 @@
 package com.pkpk.join.controller
 
 import com.pkpk.join.base.BaseController
+import com.pkpk.join.config.API_BG
+import com.pkpk.join.config.AppConfigEdit
 import com.pkpk.join.model.GroupTable
 import com.pkpk.join.model.UserTable
 import com.pkpk.join.service.IBackstageService
@@ -12,9 +14,9 @@ import org.springframework.web.multipart.MultipartFile
 
 
 @RestController
-@RequestMapping("/pk-bg-api")
+@RequestMapping(API_BG)
 @CrossOrigin
-class BackstageController : BaseController(),  IBackstageService {
+class BackstageController : BaseController(), IBackstageService {
 
     @Autowired
     private lateinit var backstageServiceImpl: BackstageServiceImpl
@@ -23,55 +25,34 @@ class BackstageController : BaseController(),  IBackstageService {
     @ResponseBody
     override fun loginRoot(
         @RequestParam("account") rootAccount: String,
-        @RequestParam("password") rootPassword: String
-    ): JsonResult<UserTable> =
-        backstageServiceImpl.loginRoot(rootAccount, rootPassword)
+        @RequestParam("password") rootPassword: String,
+    ) = backstageServiceImpl.loginRoot(rootAccount, rootPassword)
 
-
+   
     @GetMapping("/info")
-    override fun verifyToken(@RequestParam("token") token: String, needRoot: Boolean): JsonResult<UserTable> =
+    override fun verifyToken(@RequestParam("token") token: String, needRoot: Boolean) =
         backstageServiceImpl.verifyToken(token)
 
     @GetMapping("/all-user")
-    override fun getAllUser(): JsonResult<Array<UserTable>> = backstageServiceImpl.getAllUser()
+    override fun getAllUser() = backstageServiceImpl.getAllUser()
 
     @GetMapping("/all-group")
-    override fun getAllGroup(): JsonResult<Array<GroupTable>> = backstageServiceImpl.getAllGroup()
+    override fun getAllGroup() = backstageServiceImpl.getAllGroup()
 
     @GetMapping("/del-group/{groupId}", "/del-group/**")
-    override fun delGroupByGroupId(@PathVariable("groupId") groupId: Long): JsonResult<Boolean> =
+    override fun delGroupByGroupId(@PathVariable("groupId") groupId: Long) =
         backstageServiceImpl.delGroupByGroupId(groupId)
 
     @GetMapping("/del-user/{userId}", "/del-user/**")
-    override fun delUserByUserId(@PathVariable("userId") userId: Long): JsonResult<Boolean> =
-        backstageServiceImpl.delUserByUserId(userId)
+    override fun delUserByUserId(@PathVariable("userId") userId: Long) = backstageServiceImpl.delUserByUserId(userId)
 
 
     @PostMapping("/edit-user")
     @ResponseBody
     override fun rootEditUserInfo(
-        @RequestParam("user_id")  userId: Long,
-        @RequestParam("password", required = false) userPassword: String?,
-        @RequestParam("sex", required = false) userSex: Boolean?,
-        @RequestParam("nickname", required = false) userNickname: String?,
-        @RequestParam("unit", required = false) userUnit: String?,
-        @RequestParam("birth", required = false) userBirth: String?,
-        @RequestParam("introduce", required = false) userIntroduce: String?,
-        @RequestParam("grade", required = false) userGrade: Int?,
-        @RequestParam("limit", required = false) userLimit: Boolean?,
-        @RequestParam("image", required = false) userImage: MultipartFile?
-    ): JsonResult<Boolean> = backstageServiceImpl.rootEditUserInfo(
-        userId,
-        userPassword,
-        userSex,
-        userNickname,
-        userUnit,
-        userBirth,
-        userIntroduce,
-        userGrade,
-        userLimit,
-        userImage
-    )
+        @RequestParam("image", required = false) userImage: MultipartFile?,
+        @RequestBody argument: IBackstageService.EditUserInfoArgument?,
+    ) = backstageServiceImpl.rootEditUserInfo(userImage, argument)
 
     @PostMapping("/edit-group")
     @ResponseBody
@@ -79,6 +60,14 @@ class BackstageController : BaseController(),  IBackstageService {
         @RequestParam("name") groupName: String,
         @RequestParam("introduce") groupIntroduce: String,
         @RequestParam("type") groupType: String,
-        @RequestParam("image") groupImg: MultipartFile
-    ): JsonResult<Boolean> = backstageServiceImpl.rootEditGroupInfo(groupName, groupIntroduce, groupType, groupImg)
+        @RequestParam("image") groupImg: MultipartFile,
+    ) = backstageServiceImpl.rootEditGroupInfo(groupName, groupIntroduce, groupType, groupImg)
+
+
+    @GetMapping("/query-app-config")
+    override fun rootGetAppConfig() = backstageServiceImpl.rootGetAppConfig()
+
+    @PostMapping("/edit-config")
+    override fun rootEditAppConfig(@RequestBody(required = false) appConfigEdit: AppConfigEdit?) =
+        backstageServiceImpl.rootEditAppConfig(appConfigEdit)
 }

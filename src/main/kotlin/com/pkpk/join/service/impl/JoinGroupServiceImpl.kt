@@ -2,6 +2,7 @@ package com.pkpk.join.service.impl
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.pkpk.join.base.BaseServiceImpl
+import com.pkpk.join.config.AppConfig
 import com.pkpk.join.config.TOKEN_PARAMETER
 import com.pkpk.join.mapper.GroupTableMapper
 import com.pkpk.join.mapper.JoinGroupTableMapper
@@ -43,6 +44,12 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
     @Autowired
     private lateinit var userTableMapper: UserTableMapper
 
+    @Autowired
+    private lateinit var appConfig: AppConfig
+
+    @Autowired
+    private lateinit var userLogServiceImpl: UserLogServiceImpl
+
 
     override fun joinGroup(groupId: Long?): JsonResult<GroupTable> {
         if (OtherUtils.isFieldEmpty(groupId)) throw ParameterException()
@@ -55,6 +62,7 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
             this.groupId = groupId
             this.groupAdministrator = false
         })
+        userLogServiceImpl.addLogNormal("加入组")
         return groupServiceImpl.queryGroupInfoById(groupId)
     }
 
@@ -73,13 +81,14 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
                 put("user_id", userId)
             })
         })
+        userLogServiceImpl.addLogNormal("退出组")
         return JsonResult.ok("ok")
     }
 
     override fun queryUserJoinGroup(): JsonResult<Array<GroupTable>> {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
-        val joinGroupTables = joinGroupTableMapper.queryByFieldList("user_id", userId)
+        val joinGroupTables = joinGroupTableMapper.queryByFieldList(JoinGroupTable::userId, userId)
         if (joinGroupTables.isNullOrEmpty()) {
             return JsonResult.ok(arrayOf())
         }
@@ -112,7 +121,7 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
 
     override fun getJoinUserNum(groupId: Long): Int {
         groupTableMapper.selectById(groupId) ?: return 0
-        val queryByFieldList = joinGroupTableMapper.queryByFieldList("group_id", groupId)
+        val queryByFieldList = joinGroupTableMapper.queryByFieldList(JoinGroupTable::groupId, groupId)
         if (queryByFieldList.isNullOrEmpty()) return 0
         return queryByFieldList.size
     }

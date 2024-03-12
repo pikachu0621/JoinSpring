@@ -8,20 +8,17 @@ import com.pkpk.join.mapper.GroupTableMapper
 import com.pkpk.join.mapper.JoinGroupTableMapper
 import com.pkpk.join.mapper.UserSignTableMapper
 import com.pkpk.join.mapper.UserTableMapper
-import com.pkpk.join.model.GroupTable
-import com.pkpk.join.model.JoinGroupTable
-import com.pkpk.join.model.LGroupBean
-import com.pkpk.join.model.UserTable
+import com.pkpk.join.model.*
 import com.pkpk.join.service.*
 import com.pkpk.join.utils.JsonResult
 import com.pkpk.join.utils.OtherUtils
 import com.pkpk.join.utils.OtherUtils.isNumber
 import com.pkpk.join.utils.SqlUtils.delImageFile
 import com.pkpk.join.utils.SqlUtils.deleteByField
+import com.pkpk.join.utils.SqlUtils.F
 import com.pkpk.join.utils.SqlUtils.queryByFieldList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import javax.servlet.http.HttpServletRequest
 
@@ -30,7 +27,7 @@ import javax.servlet.http.HttpServletRequest
 class GroupServiceImpl: BaseServiceImpl(), IGroupService {
 
     @Autowired
-    private lateinit var APPConfig: AppConfig
+    private lateinit var appConfig: AppConfig
 
     @Autowired
     private lateinit var pictureServiceImpl: PictureServiceImpl
@@ -56,26 +53,34 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     @Autowired
     private lateinit var userSignTableMapper: UserSignTableMapper
 
+    @Autowired
+    private lateinit var userLogServiceImpl: UserLogServiceImpl
 
-    override fun createGroup(img: MultipartFile?, name: String?, type: String?, ird: String?): JsonResult<GroupTable> {
-        if (OtherUtils.isFieldEmpty(img, name, type, ird)) throw ParameterException()
-        if (name!!.length > 20) throw GroupNameLengthException()
-        if (ird!!.length > 100) throw GroupIrdLengthException()
-        // logi(APPConfig.clientConfigGroupType.contentToString())
-        logi(type!!)
-        if (!APPConfig.clientConfigGroupType.contains(type)) throw GroupTypeException()
+    override fun createGroup(
+        img: MultipartFile?,
+        argument: IGroupService.CreateGroupArgument
+    ): JsonResult<GroupTable> {
+        if (OtherUtils.isFieldEmpty(argument.name)) throw ParameterException()
+        if (argument.name.length > 20) throw GroupNameLengthException()
+        if (!argument.ird.isNullOrEmpty() && argument.ird!!.length > 100) throw GroupIrdLengthException()
+        if (!argument.pws.isNullOrEmpty() && (argument.pws!!.length > 6 || argument.pws!!.length < 4)) throw GroupPwsLengthException()
+        if (!appConfig.appConfigEdit.groupTypeArr.contains(argument.type)) throw GroupTypeException()
+
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
-
+        val userData = tokenServiceImpl.queryByToken(token)!!
         val groupTable = GroupTable().apply {
-            this.userId = tokenServiceImpl.queryByToken(token)!!.userId
+            this.userId = userData.userId
             this.groupImg = pictureServiceImpl.upImage(img).result!!
-            this.groupName = name
-            this.groupType = type
-            this.groupIntroduce = ird
+            this.groupName = argument.name
+            this.groupType = argument.type
+            this.groupIntroduce = argument.ird
+            // todo 加其他的参数
+            
         }
         groupTableMapper.insert(groupTable)
         val groupTableInsert = groupTableMapper.selectById(groupTable)
         joinGroupServiceImpl.joinGroup(groupTableInsert.id)
+        userLogServiceImpl.addLogNormal("创建组")
         return JsonResult.ok(disposeReturnData(groupTableInsert))
     }
 
@@ -91,12 +96,13 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         if( OtherUtils.isFieldEmpty(id)) throw ParameterException()
         val userId = verifyGroup(id!!)
         val groupTable = groupTableMapper.selectById(id)
-        groupTableMapper.delImageFile("group_img", groupTable.groupImg, "${APPConfig.configUserImageFilePath()}${groupTable.groupImg}")
+        groupTableMapper.delImageFile(GroupTable::groupImg, groupTable.groupImg, "${appConfig.configUserImageFilePath()}${groupTable.groupImg}")
         // 删除所有加入此组的用户记录
         joinGroupTableMapper.delete(QueryWrapper<JoinGroupTable>().apply{
-            eq("group_id", id)
+            eq(JoinGroupTable::groupId.F(), id)
         })
         groupTableMapper.deleteById(id)
+        userLogServiceImpl.addLogNormal("删除组")
         return JsonResult.ok(readUserListGroup(userId))
     }
 
@@ -104,19 +110,19 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     override fun deleteGroupByUserId(userId: Long) {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val user = userTableMapper.selectById(-tokenServiceImpl.queryByToken(token)!!.userId) ?: throw DataNulException()
-        if (user.userGrade == 0) throw GroupUserAuthorityEditException()
-        val queryByFieldList = groupTableMapper.queryByFieldList("user_id", userId) ?: return
+        if (user.userGrade == UserRank.NORMAL.LV) throw GroupUserAuthorityEditException()
+        val queryByFieldList = groupTableMapper.queryByFieldList( GroupTable::userId, userId) ?: return
         // 先删除该用户加入的组
-        joinGroupTableMapper.deleteByField("user_id", userId)
+        joinGroupTableMapper.deleteByField(JoinGroupTable::userId, userId)
         // 再删除该用户创建的组
-        joinGroupTableMapper.deleteByField("user_id", userId)
+        groupTableMapper.deleteByField(GroupTable::userId, userId)
         // 然后删除该用户的签到任务
-        userSignTableMapper.deleteByField("user_id", userId)
+        userSignTableMapper.deleteByField(UserSignTable::userId, userId)
         // 最后删除该用户创建的组
         queryByFieldList.forEach {
-            groupTableMapper.delImageFile("group_img", it.groupImg, "${APPConfig.configUserImageFilePath()}${it.groupImg}")
+            groupTableMapper.delImageFile(GroupTable::groupImg, it.groupImg, "${appConfig.configUserImageFilePath()}${it.groupImg}")
             // 删除所有加入此组的用户记录
-            joinGroupTableMapper.deleteByField("group_id", it.id)
+            joinGroupTableMapper.deleteByField(JoinGroupTable::groupId, it.id)
             groupTableMapper.deleteById(it.id)
         }
     }
@@ -132,12 +138,12 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         if (OtherUtils.isFieldEmpty(id)) throw ParameterException()
         if (!name.isNullOrEmpty() && name.length > 20) throw GroupNameLengthException()
         if (!ird.isNullOrEmpty() && ird.length > 100) throw GroupIrdLengthException()
-        if (!type.isNullOrEmpty() && !APPConfig.clientConfigGroupType.contains(type)) throw GroupTypeException()
+        if (!type.isNullOrEmpty() && !appConfig.appConfigEdit.groupTypeArr.contains(type)) throw GroupTypeException()
         verifyGroup(id!!)
         val groupTable = groupTableMapper.selectById(id).apply {
             if (img != null){
                 // 删除只有本人绑定的图片数据
-                groupTableMapper.delImageFile("group_img", this.groupImg, "${APPConfig.configUserImageFilePath()}${this.groupImg}")
+                groupTableMapper.delImageFile(GroupTable::groupImg, this.groupImg, "${appConfig.configUserImageFilePath()}${this.groupImg}")
                 this.groupImg = pictureServiceImpl.upImage(img).result!!
             }
             if (!name.isNullOrEmpty()) this.groupName = name
@@ -163,8 +169,8 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         if (!joinGroupServiceImpl.verifyJoinGroupByUserId(byGroupId, targetUserId!!))  throw GroupUserNotJoinException()
         joinGroupTableMapper.delete(QueryWrapper<JoinGroupTable>().apply {
             allEq(hashMapOf<String, Any>().apply {
-                put("group_id", byGroupId)
-                put("user_id", targetUserId)
+                put(JoinGroupTable::groupId.F(), byGroupId)
+                put(JoinGroupTable::userId.F(), targetUserId)
             })
         })
         return joinGroupServiceImpl.queryJoinGroupAllUser(byGroupId)
@@ -177,6 +183,10 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         val groupId = groupNameAndGroupId!!.isNumber()
         groupTableMapper.queryLikeGroup(groupId, groupNameAndGroupId, "desc")?.let { arrayListOf.addAll(it) }
         return JsonResult.ok(disposeReturnData(arrayListOf.toTypedArray()))
+    }
+
+    override fun faceToFaceAddGroup(longitude: Long, latitude: Long, password: Long) {
+
     }
 
 
@@ -203,7 +213,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
         if (userId < 0){
             val userData =  userTableMapper.selectById(-userId) ?: throw DataNulException()
-            if (userData.userGrade == 2) return userId
+            if (userData.userGrade == UserRank.ROOT.LV) return userId
         }
         // 越权判断
         if (groupTable.userId != userId) throw GroupUserAuthorityEditException()
@@ -215,7 +225,7 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
      * 获取该用户创建的所有群
      */
     fun readUserListGroup(userId: Long): Array<GroupTable> {
-        var queryByFieldList = groupTableMapper.queryByFieldList("user_id", userId)
+        var queryByFieldList = groupTableMapper.queryByFieldList(GroupTable::userId, userId)
         if (queryByFieldList.isNullOrEmpty()) queryByFieldList = arrayListOf()
         queryByFieldList.forEach {
             disposeReturnData(it)
@@ -242,8 +252,8 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         // /pk-pic-api/
         // /user/img/
         groupTable.groupImg = "/pk-pic-api/${groupTable.groupImg}${
-            if (APPConfig.configImageTime != -1L) {
-                val createTimeAESBCB = OtherUtils.createTimeAESBCB(APPConfig.configSalt)
+            if (appConfig.appConfigEdit.imageTime != -1L) {
+                val createTimeAESBCB = OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.tokenSalt)
                 "?c=$createTimeAESBCB"
             } else ""
         }"

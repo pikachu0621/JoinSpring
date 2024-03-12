@@ -11,10 +11,12 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.io.*
 import java.net.URI
 import java.sql.Timestamp
+import java.util.*
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import kotlin.random.Random
+
 
 object OtherUtils {
 
@@ -141,7 +143,7 @@ object OtherUtils {
     fun returnJson(
         response: HttpServletResponse,
         jsonResult: JsonResult<out Serializable>,
-        run: (writer: PrintWriter) -> Unit = {}
+        run: (writer: PrintWriter) -> Unit = {},
     ) {
         var writer: PrintWriter? = null
         response.status = HttpStatus.OK.value()

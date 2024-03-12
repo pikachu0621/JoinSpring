@@ -20,6 +20,16 @@ interface IUserService {
 
 
     /**
+     * 启动时添加 ROOT 用户
+     * 不开放该API
+     * @param userAccount 账号
+     * @param userPassword 密码
+     * @return 返回 boolean
+     */
+    fun registeredRoot(userAccount: String, userPassword: String) { }
+
+
+    /**
      * token 获取用户数据
      * 需要token
      *

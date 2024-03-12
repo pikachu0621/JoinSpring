@@ -5,6 +5,7 @@ import com.pkpk.join.config.AppConfig
 import com.pkpk.join.config.TOKEN_PARAMETER
 import com.pkpk.join.handler.UserWebSocketHandler
 import com.pkpk.join.mapper.UserTableMapper
+import com.pkpk.join.model.UserRank
 import com.pkpk.join.model.UserTable
 import com.pkpk.join.service.*
 import com.pkpk.join.utils.JsonResult
@@ -39,7 +40,10 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     private lateinit var userWebSocketHandler: UserWebSocketHandler
 
     @Autowired
-    private lateinit var APPConfig: AppConfig
+    private lateinit var userLogServiceImpl: UserLogServiceImpl
+
+    @Autowired
+    private lateinit var appConfig: AppConfig
 
     @Autowired
     private lateinit var request: HttpServletRequest
@@ -53,32 +57,40 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         userAccount!!
         userPassword!!
         if (OtherUtils.isFieldIllegal(userAccount, userPassword)) throw ParameterIllegalException()
-        var userData = userTableMapper.queryByFieldOne("user_account", userAccount)
+        var userData = userTableMapper.queryByFieldOne(UserTable::userAccount, userAccount)
         // 注册
         if (userData == null) {
-            if (userAccount.length > APPConfig.configMaxLength || userAccount.length < APPConfig.configMinLength) throw UserAccountLengthException()
-            if (userPassword.length > APPConfig.configMaxLength || userPassword.length < APPConfig.configMinLength) throw UserPasswordLengthException()
+            if (userAccount.length > appConfig.appConfigEdit.userAccountLengthLimit[1] || userAccount.length < appConfig.appConfigEdit.userAccountLengthLimit[0]) throw UserAccountLengthException()
+            if (userPassword.length > appConfig.appConfigEdit.userAccountLengthLimit[1] || userPassword.length < appConfig.appConfigEdit.userAccountLengthLimit[0]) throw UserPasswordLengthException()
             // 注册
             userTableMapper.insert(
                 UserTable(
                     userAccount,
                     userPassword,
-                    APPConfig.configDefaultPicName
+                    appConfig.configDefaultPicName
                 )
             )
         }
         // 登录
-        userData = userTableMapper.queryByFieldOne("user_account", userAccount)
+        userData = userTableMapper.queryByFieldOne(UserTable::userAccount, userAccount)
         // 验证长度
         if (userData!!.userPassword != userPassword) throw UserPasswordException()
         if (userData.userLimit) throw UserBlacklistException()
         // 生成token
-        val put = tokenServiceImpl.put(userData.id, userAccount, userPassword, APPConfig.configTokenTime)
+        val put = tokenServiceImpl.put(userData.id, userAccount, userPassword, appConfig.appConfigEdit.tokenTime)
         userData.loginToken = put.tokenLogin
         // 返回的数据
         // 断开失效的ws
         userWebSocketHandler.disLinkUnboundToken()
+        userLogServiceImpl.addLogLogin("用户登录" )
         return JsonResult.ok(disposeReturnUserData(userData))
+    }
+
+    override fun registeredRoot(userAccount: String, userPassword: String) {
+        val userData = userTableMapper.queryByFieldOne(UserTable::userAccount, userAccount)
+        if (userData == null) {
+            userTableMapper.insert(UserTable(userAccount, userPassword, appConfig.configDefaultPicName, userGrade = UserRank.ROOT.LV))
+        }
     }
 
 
@@ -106,11 +118,11 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         if (userBen == null) {
             userBen = userTableMapper.selectById(tokenBen!!.userId)
         }
-        return if (userBen!!.userImg == APPConfig.configDefaultPicName) {
+        return if (userBen!!.userImg == appConfig.configDefaultPicName) {
             if (userBen.userSex!!)
-                ImageIO.read(resourceLoader.getResource(APPConfig.configDefaultPicBoy).inputStream)
+                ImageIO.read(resourceLoader.getResource(appConfig.configDefaultPicBoy).inputStream)
             else
-                ImageIO.read(resourceLoader.getResource(APPConfig.configDefaultPicGirl).inputStream)
+                ImageIO.read(resourceLoader.getResource(appConfig.configDefaultPicGirl).inputStream)
         } else {
             pictureServiceImpl.requestImage(userBen.userImg, c)
         }
@@ -129,9 +141,9 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                 ) {
                     // 删除只有本人绑定的图片数据
                     userTableMapper.delImageFile(
-                        "user_img",
+                        UserTable::userImg,
                         it.userImg,
-                        "${APPConfig.configUserImageFilePath()}${it.userImg}"
+                        "${appConfig.configUserImageFilePath()}${it.userImg}"
                     )
                     it.userImg = pictureServiceImpl.upImage(userImage).result!!
                 })
@@ -215,7 +227,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                     arrayOf(userOldPassword, userNewPassword)
                 ) {
                     if (it.userPassword != userOldPassword!!) throw UserOldPasswordException()
-                    if (userNewPassword!!.length > APPConfig.configMaxLength || userNewPassword.length < APPConfig.configMinLength) throw UserPasswordLengthException()
+                    if (userNewPassword!!.length > appConfig.appConfigEdit.userAccountLengthLimit[1] || userNewPassword.length < appConfig.appConfigEdit.userAccountLengthLimit[0]) throw UserPasswordLengthException()
                     if (it.userPassword == userNewPassword) throw UserEquallyPasswordException()
                     if (OtherUtils.isFieldIllegal(userNewPassword)) throw ParameterIllegalException()
                     it.userPassword = userNewPassword
@@ -257,18 +269,18 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     fun disposeReturnUserData(userData: UserTable, isAddUserId: Boolean = false): UserTable {
         // 限制时间
         // 可以不加 userData.userImg 直接根据 用户token 获取   但是防止前端缓存 要加上
-        if (userData.userImg == APPConfig.configDefaultPicName) {
-            userData.userImg = APPConfig.configDefaultPicName +
+        if (userData.userImg == appConfig.configDefaultPicName) {
+            userData.userImg = appConfig.configDefaultPicName +
                     if (userData.userSex!!) "_boy"
-                    else APPConfig.configDefaultPicName + "_girl"
+                    else appConfig.configDefaultPicName + "_girl"
         }
         userData.userImg = "/pk-user-api/user-img/${userData.userImg}${
-            if (APPConfig.configImageTime != -1L) {
-                val createTimeAESBCB = OtherUtils.createTimeAESBCB(APPConfig.configSalt)
+            if (appConfig.appConfigEdit.imageTime != -1L) {
+                val createTimeAESBCB = OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.tokenSalt)
                 "?c=$createTimeAESBCB"
             } else ""
         }${
-            if (APPConfig.configImageTime != -1L) if (isAddUserId) "&uid=${userData.id}" else ""
+            if (appConfig.appConfigEdit.imageTime != -1L) if (isAddUserId) "&uid=${userData.id}" else ""
             else if (isAddUserId) "?uid=${userData.id}" else ""
         }"
         userData.userAge = TimeUtils.getDateDistanceYear(
@@ -280,16 +292,16 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         var userId = tokenServiceImpl.queryByToken(token)!!.userId
         if (userId < 0) userId = -userId
         val loginUser = userTableMapper.selectById(userId)
-        if (!userData.userOpenProfile  // 用户是否开放资料
-            && userData.id != userId // 请求用户是不是自己
-            && loginUser.userGrade <= 0
+        if (userData.userOpenProfile    // 用户是否开放资料
+            && userData.id != userId    // 请求用户是不是自己
+            && loginUser.userGrade <= UserRank.NORMAL.LV
         ) { // 请求用户是否为管理员
             userData.userSex = null
             userData.userUnit = null
             userData.userBirth = ""
             userData.userAge = null
             userData.userIntroduce = null
-            userData.userGrade = 0
+            userData.userGrade = UserRank.NORMAL.LV
             userData.userLimit = false
             userData.userPassword = ""
             userData.loginToken = null

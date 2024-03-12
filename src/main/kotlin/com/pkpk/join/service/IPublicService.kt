@@ -1,5 +1,6 @@
 package com.pkpk.join.service
 
+import com.pkpk.join.config.AppConfigEdit
 import com.pkpk.join.utils.JsonResult
 import org.springframework.web.multipart.MultipartFile
 
@@ -9,8 +10,14 @@ interface IPublicService {
     /**
      * http  test
      */
-    fun test(): JsonResult<String>
+    fun test(appConfigEdit: AppConfigEdit?): JsonResult<AppConfigEdit>
 
+
+
+    /**
+     * test client ip
+     */
+    fun testIp(): JsonResult<String>
 
 
     /**
@@ -29,7 +36,13 @@ interface IPublicService {
     /**
      * 获取group type
      */
-    fun getGroupType(): JsonResult<Array<String>>
+    fun getGroupType(): JsonResult<ArrayList<String>>
+
+
+
+
+
+    fun getGithubCommitLogs(project: String?): Any?
 
 
     /**

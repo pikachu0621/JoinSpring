@@ -1,17 +1,15 @@
 package com.pkpk.join.controller
 
 import com.pkpk.join.base.BaseController
-import com.pkpk.join.model.GroupTable
-import com.pkpk.join.model.LGroupBean
+import com.pkpk.join.config.API_JOIN_GROUP
 import com.pkpk.join.model.UserTable
 import com.pkpk.join.service.IJoinGroupService
 import com.pkpk.join.service.impl.JoinGroupServiceImpl
-import com.pkpk.join.utils.JsonResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/pk-join-group-api")
+@RequestMapping(API_JOIN_GROUP)
 @CrossOrigin
 class JoinGroupController : BaseController(), IJoinGroupService {
 
@@ -21,17 +19,15 @@ class JoinGroupController : BaseController(), IJoinGroupService {
 
 
     @GetMapping("/join-group/{groupId}", "/join-group/**")
-    override fun joinGroup(@PathVariable("groupId", required = false) groupId: Long?): JsonResult<GroupTable> =
-        joinGroupServiceImpl.joinGroup(groupId)
+    override fun joinGroup(@PathVariable("groupId", required = false) groupId: Long?) = joinGroupServiceImpl.joinGroup(groupId)
 
 
     @GetMapping("/out-group/{groupId}", "/out-group/**")
-    override fun outGroup(@PathVariable("groupId", required = false) groupId: Long?): JsonResult<String> =
-        joinGroupServiceImpl.outGroup(groupId)
+    override fun outGroup(@PathVariable("groupId", required = false) groupId: Long?) = joinGroupServiceImpl.outGroup(groupId)
 
 
     @GetMapping("/user-join")
-    override fun queryUserJoinGroup(): JsonResult<Array<GroupTable>> = joinGroupServiceImpl.queryUserJoinGroup()
+    override fun queryUserJoinGroup() =  joinGroupServiceImpl.queryUserJoinGroup()
 
 
     @GetMapping("/group-all-user/{groupId}", "/group-all-user/**")
@@ -40,7 +36,7 @@ class JoinGroupController : BaseController(), IJoinGroupService {
             "groupId",
             required = false
         ) groupId: Long?
-    ): JsonResult<LGroupBean<Array<UserTable>>> = joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
+    ) =  joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
 
 
 

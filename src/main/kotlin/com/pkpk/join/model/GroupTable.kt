@@ -3,6 +3,7 @@ package com.pkpk.join.model
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
+import com.pkpk.join.config.TABLE_GROUP
 import java.io.Serializable
 
 
@@ -13,7 +14,7 @@ import java.io.Serializable
  *  可以加个密码  防止用户乱加入
  *
  */
-@TableName("pk_group_table")
+@TableName(TABLE_GROUP)
 data class GroupTable @JvmOverloads constructor(
 
     @Column(

@@ -21,11 +21,10 @@ class WebSocketMvcConfig : WebSocketConfigurer {
     private lateinit var userWebSocketController: UserWebSocketHandler
 
     @Autowired
-    private lateinit var APPConfig: AppConfig
+    private lateinit var appConfig: AppConfig
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-
-        registry.addHandler(userWebSocketController, *APPConfig.configWebsocketPath)
+        registry.addHandler(userWebSocketController, *appConfig.configWebsocketPath)
             .addInterceptors(webSocketInterceptor)
             .setAllowedOrigins("*")
     }

@@ -5,13 +5,27 @@ import com.baomidou.mybatisplus.annotation.TableName
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
+import com.pkpk.join.config.TABLE_USER
 import java.io.Serializable
+
+
+
+enum class UserRank(
+    val LV: Int
+){
+    // 普通用户
+    NORMAL(0),
+    // 管理员
+    ADMIN(1),
+    // root 用户
+    ROOT(2)
+}
 
 
 /**
  * 用户表
  */
-@TableName("pk_user_table")
+@TableName(TABLE_USER)
 data class UserTable(
 
     //     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // 不返回给前端
@@ -65,7 +79,6 @@ data class UserTable(
     var userUnit: String? = "default",
 
 
-
     @Column(
         comment = "用户出生日期",
         isNull = true,
@@ -89,7 +102,7 @@ data class UserTable(
         length = 1,
         defaultValue = "0"
     )
-    var userGrade: Int = 0,
+    var userGrade: Int = UserRank.NORMAL.LV,
 
 
     @Column(
@@ -103,13 +116,23 @@ data class UserTable(
 
 
     @Column(
-        comment = "是否公开资料  0 = false = 不公开  1 = true = 公开",
+        comment = "私密账号  0 = false = 不私密  1 = true = 私密",
         type = MySqlTypeConstant.INT,
         isNull = false,
         length = 1,
-        defaultValue = "1"
+        defaultValue = "0"
     )
-    var userOpenProfile: Boolean = true,
+    var userOpenProfile: Boolean = false,
+
+
+    @Column(
+        comment = "上次登录日志",
+        type = MySqlTypeConstant.INT,
+        isNull = false,
+        defaultValue = "0"
+    )
+    var lastTimeLoginLog: Long = 0,
+
 
 
     @TableField(exist = false)

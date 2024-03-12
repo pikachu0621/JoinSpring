@@ -14,15 +14,33 @@ interface IGroupService {
 
 
     /**
-     * 创建组
-     *
-     * @param img 头像
      * @param name 名字
      * @param type 类型
      * @param ird 介绍
-     *
+     * @param seek 是否可搜索
+     * @param pws 加入密码
+     * @param ftf 是否开启面对面
+     * @param qr 是否开启二维码
      */
-    fun createGroup(img: MultipartFile?,  name: String?, type: String?, ird: String?): JsonResult<GroupTable>
+    data class CreateGroupArgument(
+        var name: String,
+        var type: String,
+        var ird: String?,
+        var seek: Boolean?,
+        var pws: String?,
+        var ftf: Boolean?,
+        var qr: Boolean?,
+    )
+    /**
+     * 创建组
+     *
+     * @param img 头像
+     * @param argument 参数
+     */
+    fun createGroup(
+        img: MultipartFile?,
+        argument: CreateGroupArgument
+    ): JsonResult<GroupTable>
 
 
     /**
@@ -46,7 +64,7 @@ interface IGroupService {
      * 删除该用户绑定的组
      * @param userId 用户id
      */
-    fun deleteGroupByUserId(userId: Long){ }
+    fun deleteGroupByUserId(userId: Long) {}
 
 
     /**
@@ -59,7 +77,13 @@ interface IGroupService {
      * @param id 组id
      *
      */
-    fun editUserGroup(id: Long?, img: MultipartFile?, name: String?, type: String?, ird: String?): JsonResult<GroupTable>
+    fun editUserGroup(
+        id: Long?,
+        img: MultipartFile?,
+        name: String?,
+        type: String?,
+        ird: String?,
+    ): JsonResult<GroupTable>
 
 
     /**
@@ -98,8 +122,6 @@ interface IGroupService {
      *
      *
      */
-    fun faceToFaceAddGroup(longitude: Long, latitude: Long, password: Long){
-
-    }
+    fun faceToFaceAddGroup(longitude: Long, latitude: Long, password: Long)
 
 }

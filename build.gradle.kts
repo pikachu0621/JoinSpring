@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.pkpk"
-version = "0.0.3"
+version = "0.0.4"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
@@ -26,10 +26,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     // spring websocket
     implementation("org.springframework.boot:spring-boot-starter-websocket")
+    // http请求
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     //  ========================spring=====================================
 
 
     //  ========================kotlin=====================================
+    // kotlin webflux 返回值的协程支持
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    // kotlin webflux await的协程支持
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     // kotlin json解析
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     // kotlin 反射库
@@ -50,6 +56,8 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // mysql 连接器
     runtimeOnly("mysql:mysql-connector-java")
+    // gson 解析 适配性好
+    implementation("com.google.code.gson:gson:2.8.9")
     //  ========================其他=====================================
 
 
@@ -66,7 +74,7 @@ tasks.withType<KotlinCompile> {
 }
 
 
-tasks.withType<JavaCompile>{
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     // 控制台中文乱码
     // https://blog.csdn.net/weixin_46196153/article/details/125907615
@@ -75,3 +83,11 @@ tasks.withType<JavaCompile>{
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+/*
+tasks.withType<Copy> {
+    filesMatching("application.properties"){
+        include("application.properties")
+        expand(project.properties)
+    }
+}*/

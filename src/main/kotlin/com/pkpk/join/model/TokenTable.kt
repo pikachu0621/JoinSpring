@@ -3,13 +3,14 @@ package com.pkpk.join.model
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
+import com.pkpk.join.config.TABLE_TOKEN
 import java.io.Serializable
 
 
 /**
  * token 表
  */
-@TableName("pk_token_table")
+@TableName(TABLE_TOKEN)
 data class TokenTable(
 
     @Column(

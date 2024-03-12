@@ -1,6 +1,7 @@
 package com.pkpk.join.service.impl
 
 import com.pkpk.join.base.BaseServiceImpl
+import com.pkpk.join.config.AppConfig
 import com.pkpk.join.config.TOKEN_PARAMETER
 import com.pkpk.join.handler.UserWebSocketHandler
 import com.pkpk.join.mapper.UserSignTableMapper
@@ -39,10 +40,17 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
     private lateinit var userWebSocketHandler: UserWebSocketHandler
 
     @Autowired
+    private lateinit var appConfig: AppConfig
+
+    @Autowired
+    private lateinit var userLogServiceImpl: UserLogServiceImpl
+
+    @Autowired
     private lateinit var userSignTableMapper: UserSignTableMapper
 
     @Autowired
     private lateinit var request: HttpServletRequest
+
 
 
 
@@ -61,13 +69,14 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
         userSignTableMapper.updateById(queryToSign)
         // 通知创建者有用户签到
         userWebSocketHandler.sendMessageToUserId(true, queryStartSignInfoById.userId)
+        userLogServiceImpl.addLogNormal("签到")
         return JsonResult.ok(true)
     }
 
     override fun queryAllBySignId(signId: Long): JsonResult<UserSignAndStartSign> {
         if (OtherUtils.isFieldEmpty(signId)) throw ParameterException()
         startSignServiceImpl.verifySign(signId)
-        val queryByFieldList = userSignTableMapper.queryByFieldList("sign_id", signId) ?: arrayListOf()
+        val queryByFieldList = userSignTableMapper.queryByFieldList(UserSignTable::signId, signId) ?: arrayListOf()
         queryByFieldList.forEach {
             it.userTable = userServiceImpl.userInfoById(it.userId)
         }
@@ -157,7 +166,7 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
      * 获取总人数
      */
     fun getTotalNumberOfPeople(signId: Long): Int {
-        val queryByFieldList = userSignTableMapper.queryByFieldList("sign_id", signId)
+        val queryByFieldList = userSignTableMapper.queryByFieldList(UserSignTable::signId, signId)
         if (queryByFieldList.isNullOrEmpty()) return 0
         return queryByFieldList.size
     }

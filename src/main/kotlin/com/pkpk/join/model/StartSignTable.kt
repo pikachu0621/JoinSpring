@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
+import com.pkpk.join.config.TABLE_START_SIGN
 import java.io.Serializable
 
-@TableName("pk_start_sign_table")
+@TableName(TABLE_START_SIGN)
 data class StartSignTable(
 
 
@@ -41,7 +42,7 @@ data class StartSignTable(
 
 
     @Column(
-        comment = "类型",  // 0 无密码打卡   1 签到码打卡    2 二维码打卡     3 手势打卡
+        comment = "类型",
         isNull = false,
         type = MySqlTypeConstant.INT,
         length = 1,

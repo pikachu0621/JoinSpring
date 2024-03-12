@@ -20,11 +20,11 @@ class TokenServiceImpl : BaseServiceImpl(), ITokenService {
     private lateinit var tokenTableManager: TokenTableMapper
 
     @Autowired
-    private lateinit var APPConfig: AppConfig
+    private lateinit var appConfig: AppConfig
 
 
     override fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTable {
-        val createToken = OtherUtils.createToken(APPConfig.configSalt, "$userId", userAccount, userPassword, "$tokenTime")
+        val createToken = OtherUtils.createToken(appConfig.appConfigEdit.tokenSalt, "$userId", userAccount, userPassword, "$tokenTime")
         // 删除上一个用户绑定的数据
         tokenTableManager.deleteByField("user_id", userId)
         logi("创建的token $createToken")
@@ -35,20 +35,20 @@ class TokenServiceImpl : BaseServiceImpl(), ITokenService {
 
 
     override fun queryByToken(token: String): TokenTable? {
-        return tokenTableManager.queryByFieldOne("token_login", token)
+        return tokenTableManager.queryByFieldOne(TokenTable::tokenLogin, token)
     }
 
 
     override fun queryByUserId(userId: Long): TokenTable? {
-        return tokenTableManager.queryByFieldOne("user_id", userId)
+        return tokenTableManager.queryByFieldOne(TokenTable::userId, userId)
     }
 
     override fun deleteByToken(token: String) {
-        tokenTableManager.deleteByField("token_login", token)
+        tokenTableManager.deleteByField(TokenTable::tokenLogin, token)
     }
 
     override fun deleteByUserId(userId: Long) {
-        tokenTableManager.deleteByField("user_id", userId)
+        tokenTableManager.deleteByField(TokenTable::userId, userId)
     }
 
 

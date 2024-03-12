@@ -20,15 +20,15 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
     private lateinit var httpWebInterceptor: HttpWebInterceptor
 
     @Autowired
-    private lateinit var APPConfig: AppConfig
+    private lateinit var appConfig: AppConfig
 
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(httpWebInterceptor) // 注册拦截器
             .addPathPatterns("/**")     // 拦截所有请求，包括静态资源文件
             .excludePathPatterns(
-                "/pk-user-api/login-user",
-                "/pk-bg-api/login",
-                "/pk-puc-api/**",
+                "$API_USER/login-user",
+                "$API_BG/login",
+                "$API_PUBLIC/**",
                 "/admin/**",
                 "/*.html",
                 "/css/**",
@@ -40,7 +40,7 @@ class HttpWebMvcConfig : WebMvcConfigurer , BaseCls() {
     }
 
     override fun addViewControllers(registry: ViewControllerRegistry) {
-        registry.addViewController("/admin/").setViewName("forward:/admin/index.html")
+        registry.addViewController("/admin/").setViewName("forward:/admin/root/index.html")
     }
 
     // 添加静态资源路径
