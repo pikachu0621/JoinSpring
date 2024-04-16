@@ -14,6 +14,7 @@ import com.pkpk.join.model.UserTable
 import com.pkpk.join.service.*
 import com.pkpk.join.utils.JsonResult
 import com.pkpk.join.utils.OtherUtils
+import com.pkpk.join.utils.SqlUtils.F
 import com.pkpk.join.utils.SqlUtils.queryByFieldList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -51,12 +52,18 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
     private lateinit var userLogServiceImpl: UserLogServiceImpl
 
 
-    override fun joinGroup(groupId: Long?): JsonResult<GroupTable> {
+    override fun joinGroup(groupId: Long, groupVerifyCode: String?): JsonResult<GroupTable> {
         if (OtherUtils.isFieldEmpty(groupId)) throw ParameterException()
-        groupTableMapper.selectById(groupId) ?: throw GroupNulException()
+        val groupTable = groupTableMapper.selectById(groupId) ?: throw GroupNulException()
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
-        if (verifyJoinGroupByUserId(groupId!!))  throw JoinGroupOkException()
+        if (verifyJoinGroupByUserId(groupId))  throw JoinGroupOkException()
+
+        if (!groupTable.groupVerifyPws.isNullOrEmpty()) {
+            if (groupTable.groupVerifyPws != groupVerifyCode){
+                throw GroupPwsErrorException()
+            }
+        }
         joinGroupTableMapper.insert(JoinGroupTable().apply {
             this.userId = userId
             this.groupId = groupId
@@ -77,8 +84,8 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
         if (!verifyJoinGroupByUserId(groupId!!))  throw JoinGroupNoException()
         joinGroupTableMapper.delete(QueryWrapper<JoinGroupTable>().apply {
             allEq(hashMapOf<String, Any>().apply {
-                put("group_id", groupId)
-                put("user_id", userId)
+                put(JoinGroupTable::groupId.F(), groupId)
+                put(JoinGroupTable::userId.F(), userId)
             })
         })
         userLogServiceImpl.addLogNormal("退出组")
@@ -151,8 +158,8 @@ class JoinGroupServiceImpl:  BaseServiceImpl(), IJoinGroupService {
         }
         val selectList = joinGroupTableMapper.selectList(QueryWrapper<JoinGroupTable>().apply {
             allEq(hashMapOf<String, Any>().apply {
-                put("group_id", groupId)
-                put("user_id", userIdTow)
+                put(JoinGroupTable::groupId.F(), groupId)
+                put(JoinGroupTable::userId.F(), userIdTow)
             })
         })
         return !selectList.isNullOrEmpty()

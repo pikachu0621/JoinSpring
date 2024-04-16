@@ -2,6 +2,7 @@ package com.pkpk.join.service.impl
 
 import com.pkpk.join.base.BaseServiceImpl
 import com.pkpk.join.config.AppConfig
+import com.pkpk.join.config.DEFAULT
 import com.pkpk.join.config.TOKEN_PARAMETER
 import com.pkpk.join.mapper.StartSignTableMapper
 import com.pkpk.join.model.StartSignTable
@@ -55,8 +56,8 @@ class StartSignServiceImpl : BaseServiceImpl(), IStartSignService {
         signTime: Long
     ): JsonResult<StartSignTable> {
         if (OtherUtils.isFieldEmpty(groupId, signType, signTime)) throw ParameterException()
-        val signTitleNul = if (signTitle.isNullOrEmpty()) "default" else signTitle
-        val signContentNul = if (signContent.isNullOrEmpty()) "default" else signContent
+        val signTitleNul = if (signTitle.isNullOrEmpty()) DEFAULT else signTitle
+        val signContentNul = if (signContent.isNullOrEmpty()) DEFAULT else signContent
         var signKeyNul = if (signKey.isNullOrEmpty()) "-1" else signKey
         val userId = groupServiceImpl.verifyGroup(groupId)
 

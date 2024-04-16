@@ -37,7 +37,7 @@ object AESBCBUtils {
     fun String.aesEncrypt(): String? {
         return try {
             cipher.init(Cipher.ENCRYPT_MODE, keys, ivs)
-            bytesToHexStr(cipher.doFinal(this.toByteArray(StandardCharsets.UTF_8)))
+            bytesToHexStr(cipher.doFinal(this.toByteArray(StandardCharsets.UTF_8))).lowercase()
         } catch (e: Exception) {
             null
         }
@@ -54,7 +54,7 @@ object AESBCBUtils {
     fun String.aesDecrypt(): String? {
         return try {
             cipher.init(Cipher.DECRYPT_MODE, keys, ivs)
-            val decode = hexStrToBytes(this)
+            val decode = hexStrToBytes(this.uppercase())
            String(cipher.doFinal(decode))
         } catch (_: Exception){
             null

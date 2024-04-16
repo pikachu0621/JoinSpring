@@ -13,7 +13,17 @@ interface IPictureService {
      * @param pictureMd5 图片名
      * @return 图片流
      */
-    fun requestImage(pictureMd5: String?, c: String?) : BufferedImage
+    fun requestImage(pictureMd5: String, c: String?) : BufferedImage
+
+
+    /**
+     * 读取 static/images 图片
+     *
+     * produces = MediaType.IMAGE_JPEG_VALUE
+     * @param pictureName 图片名
+     * @return 图片流
+     */
+    fun requestStaticImage(pictureName: String, c: String?) : BufferedImage
 
 
     /**
@@ -22,7 +32,7 @@ interface IPictureService {
      * @param  imageFile 图片文件
      * @return 返回MD5命名后的图片名字
      */
-    fun upImage(imageFile: MultipartFile?): JsonResult<String>
+    fun upImage(imageFile: MultipartFile): JsonResult<String>
 
 
 }

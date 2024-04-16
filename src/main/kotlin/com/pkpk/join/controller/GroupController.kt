@@ -7,7 +7,6 @@ import com.pkpk.join.service.impl.GroupServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-
 @RestController
 @RequestMapping(API_GROUP)
 @CrossOrigin
@@ -21,9 +20,13 @@ class GroupController : BaseController(), IGroupService {
     @PostMapping("/create")
     @ResponseBody
     override fun createGroup(
-        @RequestParam("img", required = false) img: MultipartFile?,
-        @RequestBody argument: IGroupService.CreateGroupArgument
-    ) = groupServiceImpl.createGroup(img, argument)
+        @RequestParam("name", required = true) name: String,
+        @RequestParam("img", required = true) img: MultipartFile?,
+        @RequestParam("type", required = false) type: String?,
+        @RequestParam("ird", required = false) ird: String?,
+        @RequestParam("search", required = false) search: Boolean?,
+        @RequestParam("verify", required = false) verify: String?
+    ) = groupServiceImpl.createGroup(name, img, type, ird, search, verify)
 
     @GetMapping("/user-create-group")
     override fun userCreateGroup() = groupServiceImpl.userCreateGroup()
@@ -38,12 +41,14 @@ class GroupController : BaseController(), IGroupService {
     @PostMapping("/edit-group")
     @ResponseBody
     override fun editUserGroup(
-        @RequestParam("id", required = true) id: Long?,
+        @RequestParam("id", required = true) id: Long,
         @RequestParam("img", required = false) img: MultipartFile?,
         @RequestParam("name", required = false) name: String?,
         @RequestParam("type", required = false) type: String?,
-        @RequestParam("ird", required = false) ird: String?
-    ) = groupServiceImpl.editUserGroup(id, img, name, type, ird)
+        @RequestParam("ird", required = false) ird: String?,
+        @RequestParam("search", required = false) search: Boolean?,
+        @RequestParam("verify", required = false) verify: String?
+    ) = groupServiceImpl.editUserGroup(id, img, name, type, ird, search, verify)
 
 
     @GetMapping("/query-group/{id}", "/query-group/**")
@@ -65,3 +70,4 @@ class GroupController : BaseController(), IGroupService {
 
     override fun faceToFaceAddGroup(longitude: Long, latitude: Long, password: Long) = groupServiceImpl.faceToFaceAddGroup(longitude, latitude, password)
 }
+

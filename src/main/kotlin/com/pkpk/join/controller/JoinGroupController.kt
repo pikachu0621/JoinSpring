@@ -18,16 +18,23 @@ class JoinGroupController : BaseController(), IJoinGroupService {
     private lateinit var joinGroupServiceImpl: JoinGroupServiceImpl
 
 
-    @GetMapping("/join-group/{groupId}", "/join-group/**")
-    override fun joinGroup(@PathVariable("groupId", required = false) groupId: Long?) = joinGroupServiceImpl.joinGroup(groupId)
+    @GetMapping("/join-group")
+    override fun joinGroup(
+        @RequestParam("groupId", required = true) groupId: Long,
+        @RequestParam("groupVerify", required = false) groupVerifyCode: String?
+    ) = joinGroupServiceImpl.joinGroup(
+        groupId,
+        groupVerifyCode
+    )
 
 
     @GetMapping("/out-group/{groupId}", "/out-group/**")
-    override fun outGroup(@PathVariable("groupId", required = false) groupId: Long?) = joinGroupServiceImpl.outGroup(groupId)
+    override fun outGroup(@PathVariable("groupId", required = false) groupId: Long?) =
+        joinGroupServiceImpl.outGroup(groupId)
 
 
     @GetMapping("/user-join")
-    override fun queryUserJoinGroup() =  joinGroupServiceImpl.queryUserJoinGroup()
+    override fun queryUserJoinGroup() = joinGroupServiceImpl.queryUserJoinGroup()
 
 
     @GetMapping("/group-all-user/{groupId}", "/group-all-user/**")
@@ -36,8 +43,7 @@ class JoinGroupController : BaseController(), IJoinGroupService {
             "groupId",
             required = false
         ) groupId: Long?
-    ) =  joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
-
+    ) = joinGroupServiceImpl.queryJoinGroupAllUser(groupId)
 
 
     override fun getJoinUserNum(groupId: Long): Int = 0

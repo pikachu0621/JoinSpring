@@ -22,16 +22,18 @@ class AppConfig(private val json: ObjectMapper = ObjectMapper()) {
     var configUserStatic: String = ""
 
 
-    @Value("\${config.default.pic-name}")
-    var configDefaultPicName: String = ""
 
+    @Value("\${config.default.pic-path}")
+    var configStaticPicPath: String = ""
 
-    @Value("\${config.default.pic-boy-path}")
+    @Value("\${config.default.pic-boy}")
     var configDefaultPicBoy: String = ""
 
-
-    @Value("\${config.default.pic-girl-path}")
+    @Value("\${config.default.pic-girl}")
     var configDefaultPicGirl: String = ""
+
+    @Value("\${config.default.pic-group}")
+    var configDefaultPicGroup: String = ""
 
 
     @Value("\${config-websocket-path}")
@@ -40,8 +42,11 @@ class AppConfig(private val json: ObjectMapper = ObjectMapper()) {
     var appConfigEdit: AppConfigEdit = upDataAppConfigEdit()
 
 
+    // ~/
     val configUserDir = "${System.getProperty("user.dir")}${File.separator}"
+    // ~/user
     fun configUserStaticFilePath(): String = "$configUserDir$configUserStatic${File.separator}"
+    // ~/user/img
     fun configUserImageFilePath(): String = "${configUserStaticFilePath()}$configUserImg${File.separator}"
 
 

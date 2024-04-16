@@ -1,1 +1,1 @@
-{"appIsRemove":false,"appPackageName":"com.pkpk.join","groupTypeArr":["培训组","课堂组","会议组","学校组","公司组","活动组","其它"],"imagePassword":"pkpk","imageTime":-1,"imageSize":20,"tokenSalt":"com.pkpk.join","tokenTime":-1,"userAccountLengthLimit":[6,12]}
+{"appIsRemove":false,"appPackageName":"com.pkpk.join","groupTypeArr":["会议组","课堂组","公司组","学校组","培训组","活动组","其它"],"imagePassword":"pkpk","imageTime":-1,"imageSize":20,"tokenSalt":"com.pkpk.join","tokenTime":-1,"userAccountLengthLimit":[6,12]}

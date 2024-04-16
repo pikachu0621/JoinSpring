@@ -1,8 +1,7 @@
 package com.pkpk.join.service.impl
 
 import com.pkpk.join.base.BaseServiceImpl
-import com.pkpk.join.config.AppConfig
-import com.pkpk.join.config.TOKEN_PARAMETER
+import com.pkpk.join.config.*
 import com.pkpk.join.handler.UserWebSocketHandler
 import com.pkpk.join.mapper.UserTableMapper
 import com.pkpk.join.model.UserRank
@@ -48,8 +47,6 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     @Autowired
     private lateinit var request: HttpServletRequest
 
-    @Autowired
-    private lateinit var resourceLoader: ResourceLoader
 
 
     override fun login(userAccount: String?, userPassword: String?): JsonResult<UserTable> {
@@ -67,7 +64,7 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
                 UserTable(
                     userAccount,
                     userPassword,
-                    appConfig.configDefaultPicName
+                    DEFAULT
                 )
             )
         }
@@ -82,14 +79,14 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
         // 返回的数据
         // 断开失效的ws
         userWebSocketHandler.disLinkUnboundToken()
-        userLogServiceImpl.addLogLogin("用户登录" )
+        userLogServiceImpl.addLogLogin("用户登录")
         return JsonResult.ok(disposeReturnUserData(userData))
     }
 
     override fun registeredRoot(userAccount: String, userPassword: String) {
         val userData = userTableMapper.queryByFieldOne(UserTable::userAccount, userAccount)
         if (userData == null) {
-            userTableMapper.insert(UserTable(userAccount, userPassword, appConfig.configDefaultPicName, userGrade = UserRank.ROOT.LV))
+            userTableMapper.insert(UserTable(userAccount, userPassword, DEFAULT, userGrade = UserRank.ROOT.LV))
         }
     }
 
@@ -107,31 +104,9 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
     }
 
 
-    override fun userImage(c: String?, userId: Long?): BufferedImage {
-        var userBen: UserTable?
-        val tokenBen = tokenServiceImpl.queryByToken(OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!)
-        userBen = if (userId != null && userId != -1L) {
-            userTableMapper.selectById(userId)
-        } else {
-            userTableMapper.selectById(tokenBen!!.userId)
-        }
-        if (userBen == null) {
-            userBen = userTableMapper.selectById(tokenBen!!.userId)
-        }
-        return if (userBen!!.userImg == appConfig.configDefaultPicName) {
-            if (userBen.userSex!!)
-                ImageIO.read(resourceLoader.getResource(appConfig.configDefaultPicBoy).inputStream)
-            else
-                ImageIO.read(resourceLoader.getResource(appConfig.configDefaultPicGirl).inputStream)
-        } else {
-            pictureServiceImpl.requestImage(userBen.userImg, c)
-        }
-    }
-
-
     // 上传图片
     override fun editImage(
-        userImage: MultipartFile?
+        userImage: MultipartFile
     ): JsonResult<UserTable> =
         JsonResult.ok(
             disposeReturnUserData(
@@ -267,29 +242,26 @@ class UserServiceImpl : BaseServiceImpl(), IUserService {
      *
      */
     fun disposeReturnUserData(userData: UserTable, isAddUserId: Boolean = false): UserTable {
+
+        fun imageTimeAes() = if (appConfig.appConfigEdit.imageTime != -1L) {
+            val createTimeAESBCB = OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.tokenSalt)
+            "?c=$createTimeAESBCB"
+        } else ""
+
         // 限制时间
-        // 可以不加 userData.userImg 直接根据 用户token 获取   但是防止前端缓存 要加上
-        if (userData.userImg == appConfig.configDefaultPicName) {
-            userData.userImg = appConfig.configDefaultPicName +
-                    if (userData.userSex!!) "_boy"
-                    else appConfig.configDefaultPicName + "_girl"
-        }
-        userData.userImg = "/pk-user-api/user-img/${userData.userImg}${
-            if (appConfig.appConfigEdit.imageTime != -1L) {
-                val createTimeAESBCB = OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.tokenSalt)
-                "?c=$createTimeAESBCB"
-            } else ""
-        }${
-            if (appConfig.appConfigEdit.imageTime != -1L) if (isAddUserId) "&uid=${userData.id}" else ""
-            else if (isAddUserId) "?uid=${userData.id}" else ""
-        }"
+        userData.userImg =
+            if (userData.userImg == DEFAULT) "${API_PICTURE}/static/${if (userData.userSex!!) appConfig.configDefaultPicBoy else appConfig.configDefaultPicGirl}${imageTimeAes()}"
+            else "${API_PICTURE}/${userData.userImg}${imageTimeAes()}"
+
+
         userData.userAge = TimeUtils.getDateDistanceYear(
             userData.userBirth,
             TimeUtils.getCurrentTime("yyyy-MM-dd")
         )
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)
         if (token.isNullOrEmpty()) return userData
-        var userId = tokenServiceImpl.queryByToken(token)!!.userId
+        val queryByToken = tokenServiceImpl.queryByToken(token) ?: return userData
+        var userId = queryByToken.userId
         if (userId < 0) userId = -userId
         val loginUser = userTableMapper.selectById(userId)
         if (userData.userOpenProfile    // 用户是否开放资料

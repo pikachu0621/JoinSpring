@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 interface StartSignTableMapper: BaseMapper<StartSignTable>{
 
-    @Select("SELECT * FROM $TABLE_START_SIGN WHERE user_id=#{userId} ORDER BY `id` #{order}") // desc 倒叙
+    @Select("SELECT * FROM $TABLE_START_SIGN WHERE user_id=\${userId} ORDER BY `id` \${order}") // desc 倒叙
     fun querySignAllInfoUserId(userId: Long, order: String = "asc"): ArrayList<StartSignTable>?
 
 }

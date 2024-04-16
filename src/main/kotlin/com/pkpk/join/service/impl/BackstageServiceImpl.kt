@@ -18,6 +18,7 @@ import com.pkpk.join.utils.SqlUtils.queryByFieldOne
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 import org.springframework.web.socket.CloseStatus
 import javax.servlet.http.HttpServletRequest
 
@@ -118,7 +119,8 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         // 删除只有本人绑定的图片数据
         userTableMapper.deleteById(userId)
         // 删除用户头像
-        userTableMapper.delImageFile(UserTable::userImg,
+        userTableMapper.delImageFile(
+            UserTable::userImg,
             userInfoById.userImg,
             "${appConfig.configUserImageFilePath()}${userInfoById.userImg}"
         )
@@ -131,36 +133,46 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         return JsonResult.ok(true)
     }
 
+    // todo 这里后台上传不了图片
     override fun rootEditUserInfo(
+        userId: Long,
+        userPassword: String?,
+        userSex: Boolean?,
+        userNickname: String?,
+        userUnit: String?,
+        userBirth: String?,
+        userIntroduce: String?,
+        userGrade: Int?,
+        userLimit: Boolean?,
         userImage: MultipartFile?,
-        argument: IBackstageService.EditUserInfoArgument?
     ): JsonResult<Boolean> {
-        if (argument == null) throw ParameterException()
+        // if (argument == null) throw ParameterException()
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userData = verifyToken(token).result!!
         // 这里可以限制 本账号不能修改本账号数据
-        val userInfoById = userTableMapper.selectById(argument.userId) ?: throw DataNulException()
+        val userInfoById = userTableMapper.selectById(userId) ?: throw DataNulException()
         // 管理员禁止编辑 高于 1 的用户
         if (userData.userGrade == UserRank.ADMIN.LV && userInfoById.userGrade >= UserRank.ADMIN.LV && userInfoById.id != userData.id) throw BackstageEditToRootException()
-        if (userData.id == argument.userId && argument.userLimit == true) throw BackstageLimitToRootException()
-        if (userData.id == argument.userId && argument.userGrade != null && argument.userGrade != userData.userGrade) throw BackstageGradeToMeException()
-        if (userData.userGrade == UserRank.ADMIN.LV && argument.userGrade != null && argument.userGrade!! > UserRank.NORMAL.LV && userInfoById.id != userData.id) throw BackstageGradeToException()
+        if (userData.id == userId && userLimit == true) throw BackstageLimitToRootException()
+        if (userData.id == userId && userGrade != null && userGrade != userData.userGrade) throw BackstageGradeToMeException()
+        if (userData.userGrade == UserRank.ADMIN.LV && userGrade != null && userGrade > UserRank.NORMAL.LV && userInfoById.id != userData.id) throw BackstageGradeToException()
 
         val oldLimit = userInfoById.userLimit
         val oldPassword = userInfoById.userPassword
 
         userInfoById.apply {
-            if (!argument.userPassword.isNullOrEmpty()) this.userPassword = argument.userPassword!!
-            if (argument.userSex != null) this.userSex = argument.userSex
-            if (!argument.userNickname.isNullOrEmpty()) this.userNickname = argument.userNickname
-            if (!argument.userUnit.isNullOrEmpty()) this.userUnit = argument.userUnit
-            if (!argument.userBirth.isNullOrEmpty()) this.userBirth = argument.userBirth!!
-            if (!argument.userIntroduce.isNullOrEmpty()) this.userIntroduce = argument.userIntroduce
-            if (argument.userGrade != null && userGrade >= UserRank.NORMAL.LV && userGrade <= UserRank.ROOT.LV) this.userGrade = argument.userGrade!!
-            if (argument.userLimit != null) this.userLimit = argument.userLimit!!
-            if (!(userImage == null || userImage.isEmpty || userImage.size <= 10)) {
-                userTableMapper.delImageFile(UserTable::userImg, this.userImg,
-                    "${appConfig.configUserImageFilePath()}${this.userImg}"
+            if (!userPassword.isNullOrEmpty()) this.userPassword = userPassword
+            if (userSex != null) this.userSex = userSex
+            if (!userNickname.isNullOrEmpty()) this.userNickname = userNickname
+            if (!userUnit.isNullOrEmpty()) this.userUnit = userUnit
+            if (!userBirth.isNullOrEmpty()) this.userBirth = userBirth
+            if (!userIntroduce.isNullOrEmpty()) this.userIntroduce = userIntroduce
+            if (userGrade != null && userGrade >= UserRank.NORMAL.LV && userGrade <= UserRank.ROOT.LV) this.userGrade =
+                userGrade
+            if (userLimit != null) this.userLimit = userLimit
+            if (userImage != null && userImage.size > 10) {
+                userTableMapper.delImageFile(
+                    UserTable::userImg, this.userImg, "${appConfig.configUserImageFilePath()}${this.userImg}"
                 )
                 this.userImg = pictureServiceImpl.upImage(userImage).result!!
             }
@@ -174,7 +186,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
         if (oldPassword != userInfoById.userPassword || oldLimit != userInfoById.userLimit) {
             // 断开失效的ws
             // 通知前端下线
-            tokenServiceImpl.deleteByUserId(argument.userId)
+            tokenServiceImpl.deleteByUserId(userId)
             userWebSocketHandler.disLinkUnboundToken(CloseStatus.PROTOCOL_ERROR)
         }
         userLogServiceImpl.addLogLogin("后台修改用户 用户ID: ${userData.id}, 账号: ${userData.userAccount}}")
@@ -194,7 +206,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
     override fun rootGetAppConfig(): JsonResult<AppConfigEdit> {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val verifyToken = verifyToken(token)
-        if (verifyToken.result!!.userGrade != UserRank.ROOT.LV) throw BackstageAuthorityException()
+        if (verifyToken.result!!.userGrade == UserRank.NORMAL.LV) throw BackstageAuthorityException()
         return JsonResult.ok(appConfig.appConfigEdit)
     }
 
@@ -202,7 +214,7 @@ class BackstageServiceImpl : BaseServiceImpl(), IBackstageService {
     override fun rootEditAppConfig(appConfigEdit: AppConfigEdit?): JsonResult<Boolean> {
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val verifyToken = verifyToken(token)
-        if (verifyToken.result!!.userGrade != UserRank.ROOT.LV) throw BackstageAuthorityException()
+        if (verifyToken.result!!.userGrade != UserRank.ROOT.LV) throw BackstageAuthorityConfigException()
         appConfigEdit ?: throw ParameterException()
         if (appConfigEdit.appPackageName.isEmpty()) throw ParameterException()
         if (appConfigEdit.groupTypeArr.isEmpty()) throw ParameterException()

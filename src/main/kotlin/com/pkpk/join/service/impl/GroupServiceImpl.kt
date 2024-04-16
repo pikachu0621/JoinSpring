@@ -2,7 +2,9 @@ package com.pkpk.join.service.impl
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.pkpk.join.base.BaseServiceImpl
+import com.pkpk.join.config.API_PICTURE
 import com.pkpk.join.config.AppConfig
+import com.pkpk.join.config.DEFAULT
 import com.pkpk.join.config.TOKEN_PARAMETER
 import com.pkpk.join.mapper.GroupTableMapper
 import com.pkpk.join.mapper.JoinGroupTableMapper
@@ -57,29 +59,33 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
     private lateinit var userLogServiceImpl: UserLogServiceImpl
 
     override fun createGroup(
+        name: String,
         img: MultipartFile?,
-        argument: IGroupService.CreateGroupArgument
+        type: String?,
+        ird: String?,
+        search: Boolean?,
+        verify: String?
     ): JsonResult<GroupTable> {
-        if (OtherUtils.isFieldEmpty(argument.name)) throw ParameterException()
-        if (argument.name.length > 20) throw GroupNameLengthException()
-        if (!argument.ird.isNullOrEmpty() && argument.ird!!.length > 100) throw GroupIrdLengthException()
-        if (!argument.pws.isNullOrEmpty() && (argument.pws!!.length > 6 || argument.pws!!.length < 4)) throw GroupPwsLengthException()
-        if (!appConfig.appConfigEdit.groupTypeArr.contains(argument.type)) throw GroupTypeException()
+        if (OtherUtils.isFieldEmpty(name)) throw ParameterException()
+        if (name.length > 20) throw GroupNameLengthException()
+        if (!ird.isNullOrEmpty() && ird.length > 100) throw GroupIrdLengthException()
+        if (!verify.isNullOrEmpty() && (verify.length > 6 || verify.length < 4)) throw GroupPwsLengthException()
+        if (!appConfig.appConfigEdit.groupTypeArr.contains(type)) throw GroupTypeException()
 
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userData = tokenServiceImpl.queryByToken(token)!!
         val groupTable = GroupTable().apply {
             this.userId = userData.userId
-            this.groupImg = pictureServiceImpl.upImage(img).result!!
-            this.groupName = argument.name
-            this.groupType = argument.type
-            this.groupIntroduce = argument.ird
-            // todo 加其他的参数
-            
+            this.groupImg = if (img == null) DEFAULT else pictureServiceImpl.upImage(img).result!!
+            this.groupName = name
+            this.groupType = if(ird.isNullOrEmpty()) appConfig.appConfigEdit.groupTypeArr[0] else type
+            this.groupIntroduce = if(ird.isNullOrEmpty()) DEFAULT else ird
+            this.groupIsSearch = search ?: true
+            this.groupVerifyPws = verify
         }
         groupTableMapper.insert(groupTable)
         val groupTableInsert = groupTableMapper.selectById(groupTable)
-        joinGroupServiceImpl.joinGroup(groupTableInsert.id)
+        joinGroupServiceImpl.joinGroup(groupTableInsert.id, verify)
         userLogServiceImpl.addLogNormal("创建组")
         return JsonResult.ok(disposeReturnData(groupTableInsert))
     }
@@ -129,17 +135,20 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
 
 
     override fun editUserGroup(
-        id: Long?,
+        id: Long,
         img: MultipartFile?,
         name: String?,
         type: String?,
-        ird: String?
+        ird: String?,
+        search: Boolean?,
+        verify: String?
     ): JsonResult<GroupTable> {
         if (OtherUtils.isFieldEmpty(id)) throw ParameterException()
         if (!name.isNullOrEmpty() && name.length > 20) throw GroupNameLengthException()
         if (!ird.isNullOrEmpty() && ird.length > 100) throw GroupIrdLengthException()
+        if (!verify.isNullOrEmpty() && (verify.length > 6 || verify.length < 4)) throw GroupPwsLengthException()
         if (!type.isNullOrEmpty() && !appConfig.appConfigEdit.groupTypeArr.contains(type)) throw GroupTypeException()
-        verifyGroup(id!!)
+        verifyGroup(id)
         val groupTable = groupTableMapper.selectById(id).apply {
             if (img != null){
                 // 删除只有本人绑定的图片数据
@@ -149,6 +158,8 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
             if (!name.isNullOrEmpty()) this.groupName = name
             if (!type.isNullOrEmpty()) this.groupType = type
             if (!ird.isNullOrEmpty()) this.groupIntroduce = ird
+            if (!verify.isNullOrEmpty()) this.groupVerifyPws = verify
+            if (search != null) this.groupIsSearch = search
         }
         groupTableMapper.updateById(groupTable)
         return JsonResult.ok(disposeReturnData(groupTable))
@@ -251,21 +262,27 @@ class GroupServiceImpl: BaseServiceImpl(), IGroupService {
         // 限制时间
         // /pk-pic-api/
         // /user/img/
-        groupTable.groupImg = "/pk-pic-api/${groupTable.groupImg}${
-            if (appConfig.appConfigEdit.imageTime != -1L) {
-                val createTimeAESBCB = OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.tokenSalt)
-                "?c=$createTimeAESBCB"
-            } else ""
-        }"
+        fun imageTimeAes() = if (appConfig.appConfigEdit.imageTime != -1L) {
+            val createTimeAESBCB = OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.tokenSalt)
+            "?c=$createTimeAESBCB"
+        } else ""
+
+        groupTable.groupImg =
+            if (groupTable.groupImg == DEFAULT) "${API_PICTURE}/static/${appConfig.configDefaultPicGroup}${imageTimeAes()}"
+            else "${API_PICTURE}/${groupTable.groupImg}${imageTimeAes()}"
         // 该组人数
         // 该组前4名
         // 用户是否加入该组
         val token = OtherUtils.getMustParameter(request, TOKEN_PARAMETER)!!
         val userId = tokenServiceImpl.queryByToken(token)!!.userId
+        groupTable.groupIsVerify = !groupTable.groupVerifyPws.isNullOrEmpty()
         if (groupTable.userId == userId){
             groupTable.groupAndUser = 2
         } else {
             groupTable.groupAndUser =  if (joinGroupServiceImpl.verifyJoinGroupByUserId(groupTable.id)) 1 else 0
+            // 不是管理员
+            groupTable.groupVerifyPws = null
+            groupTable.groupIsSearch = false
         }
         groupTable.groupTopFourPeople = joinGroupServiceImpl.queryJoinTopFourPeople(groupTable.id)
         groupTable.groupPeople = joinGroupServiceImpl.getJoinUserNum(groupTable.id)

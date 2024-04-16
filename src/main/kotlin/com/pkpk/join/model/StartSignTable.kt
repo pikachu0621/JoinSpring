@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableName
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
+import com.pkpk.join.config.DEFAULT
 import com.pkpk.join.config.TABLE_START_SIGN
 import java.io.Serializable
 
@@ -28,17 +29,17 @@ data class StartSignTable(
     @Column(
         comment = "标题",
         isNull = true,
-        defaultValue = "default"
+        defaultValue = DEFAULT
     )
-    var signTitle: String = "default",
+    var signTitle: String = DEFAULT,
 
 
     @Column(
         comment = "内容",
         isNull = true,
-        defaultValue = "default"
+        defaultValue = DEFAULT
     )
-    var signContent: String = "default",
+    var signContent: String = DEFAULT,
 
 
     @Column(

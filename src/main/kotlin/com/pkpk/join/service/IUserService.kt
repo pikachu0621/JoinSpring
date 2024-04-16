@@ -44,15 +44,6 @@ interface IUserService {
     fun userInfoById(userId: Long): UserTable = UserTable()
 
 
-    /**
-     * 加载用户头像
-     * 需要token
-     * @param c 时效AES 可空
-     *
-     */
-    fun userImage(c: String?, userId: Long? = -1L): BufferedImage
-
-
 
     /**
      * 修改头像
@@ -60,7 +51,7 @@ interface IUserService {
      *
      * @param userImage 用户头像
      */
-    fun editImage(userImage: MultipartFile?): JsonResult<UserTable>
+    fun editImage(userImage: MultipartFile): JsonResult<UserTable>
 
 
 

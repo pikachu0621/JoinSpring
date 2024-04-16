@@ -44,6 +44,7 @@ class GroupUserAuthorityEditException : BaseServiceException(-704, "此组您没
 class GroupNulException : BaseServiceException(-705, "此组不存在")
 class GroupByToMyException : BaseServiceException(-706, "不能自己踢自己")
 class GroupUserNotJoinException : BaseServiceException(-707, "该用户未加入此组，无法操作")
+class GroupPwsErrorException : BaseServiceException(-708, "验证失败")
 
 
 // 加入 group
@@ -72,8 +73,7 @@ class BackstageEditToRootException : BaseServiceException(-1006, "您无权操�
 class BackstageEditAppConfigException : BaseServiceException(-1007, "时效不能为小于-1并且不能等于0！")
 class BackstageEditAppConfigSizeException : BaseServiceException(-1008, "大小MB不能小于1！")
 class BackstageEditAppConfigAccountLengthLimitException : BaseServiceException(-1009, "集合size不能大于2并且集合数值要大于0，且集合值1要小于集合值2")
-
-
+class BackstageAuthorityConfigException : BaseServiceException(-1010, "权限等级不够，需要ROOT权限！")
 
 // log
 class LogTokenUnl : BaseServiceException(-1002, "请勿在公开接口内使用log服务！")

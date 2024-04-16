@@ -10,12 +10,12 @@ JoinSpring
 # 命令行创建用户
 # (<用户名> = <数据库名>)   <密码>
 CREATE USER '<用户名>'@'localhost' IDENTIFIED BY '<密码>';
-GRANT ALL ON <数据库名>.* TO '<用户名>'@'localhost' IDENTIFIED BY '<密码>' WITH GRANT OPTION;
+GRANT ALL ON '<数据库名>'.* TO '<用户名>'@'localhost' IDENTIFIED BY '<密码>' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
 # 例子
 CREATE USER 'pk_join'@'localhost' IDENTIFIED BY '123456';
-GRANT ALL ON pk_join.* TO 'pk_join'@'localhost' IDENTIFIED BY '123456' WITH GRANT OPTION;
+GRANT ALL ON `pk_join`.* TO 'pk_join'@'localhost' IDENTIFIED BY '123456' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
 >4. [下载](/jar/JoinSpring-0.0.3.jar)打包好的jar ```java -jar 'JoinSpring-0.0.3.jar```' 即可
@@ -84,6 +84,13 @@ config-websocket-path=/ws,/ws/*
 127.0.0.1:8012/admin/index.html
 
 ---
+##  待更新
+##  1.修改图片上传为单独的，返回数据 <br>
+##  2.修改传产数为集成类
+##  3.添加面对面
+
+
+
 
 WechatBy: pkpk-run
 ===

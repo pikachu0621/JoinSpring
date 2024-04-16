@@ -4,6 +4,8 @@ const val TOKEN_PARAMETER = "token"
 
 const val DEVICE_INFO_PARAMETER = "device"
 
+const val DEFAULT = "default"
+
 /**
  * 前缀
  */

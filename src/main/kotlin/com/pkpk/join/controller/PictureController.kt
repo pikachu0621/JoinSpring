@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.awt.image.BufferedImage
 
 
 /**
@@ -26,13 +27,18 @@ class PictureController : BaseController(), IPictureService {
 
     @GetMapping("/{imageName}", "/", produces = [MediaType.IMAGE_PNG_VALUE])
     override fun requestImage(
-        @PathVariable("imageName", required = false) pictureMd5: String?,
+        @PathVariable("imageName", required = true) pictureMd5: String,
         @RequestParam("c", required = false) c: String?,
     ) = pictureServiceImpl.requestImage(pictureMd5, c)
+
+    @GetMapping("/static/{imageName}", "/static/", produces = [MediaType.IMAGE_PNG_VALUE])
+    override fun requestStaticImage(
+        @PathVariable("imageName", required = true) pictureName: String,
+        @RequestParam("c", required = false) c: String?
+    ): BufferedImage = pictureServiceImpl.requestStaticImage(pictureName, c)
 
 
     @PostMapping("/up-img")
     @ResponseBody
-    override fun upImage(@RequestParam("img") imageFile: MultipartFile?)
-    = pictureServiceImpl.upImage(imageFile)
+    override fun upImage(@RequestParam("img", required = true) imageFile: MultipartFile) = pictureServiceImpl.upImage(imageFile)
 }

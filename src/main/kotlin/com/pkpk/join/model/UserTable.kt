@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column
 import com.gitee.sunchenbin.mybatis.actable.constants.MySqlTypeConstant
+import com.pkpk.join.config.DEFAULT
 import com.pkpk.join.config.TABLE_USER
 import java.io.Serializable
 
@@ -66,17 +67,17 @@ data class UserTable(
     @Column(
         comment = "用户昵称",
         isNull = true,
-        defaultValue = "default"
+        defaultValue = DEFAULT
     )
-    var userNickname: String? = "default",
+    var userNickname: String? = DEFAULT,
 
 
     @Column(
         comment = "用户 学校/单位",
         isNull = true,
-        defaultValue = "default"
+        defaultValue = DEFAULT
     )
-    var userUnit: String? = "default",
+    var userUnit: String? = DEFAULT,
 
 
     @Column(

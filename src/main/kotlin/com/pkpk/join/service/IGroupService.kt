@@ -31,15 +31,24 @@ interface IGroupService {
         var ftf: Boolean?,
         var qr: Boolean?,
     )
+
     /**
      * 创建组
      *
      * @param img 头像
-     * @param argument 参数
+     * @param name 群名
+     * @param type 群类型
+     * @param ird 简介
+     * @param search 是否可搜索
+     * @param verify 验证密码 空不验证
      */
     fun createGroup(
+        name: String,
         img: MultipartFile?,
-        argument: CreateGroupArgument
+        type: String?,
+        ird: String?,
+        search: Boolean?,
+        verify: String?
     ): JsonResult<GroupTable>
 
 
@@ -78,11 +87,13 @@ interface IGroupService {
      *
      */
     fun editUserGroup(
-        id: Long?,
+        id: Long,
         img: MultipartFile?,
         name: String?,
         type: String?,
         ird: String?,
+        search: Boolean?,
+        verify: String?
     ): JsonResult<GroupTable>
 
 

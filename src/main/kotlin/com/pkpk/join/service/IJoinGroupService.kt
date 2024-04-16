@@ -14,7 +14,7 @@ interface IJoinGroupService {
      * 需要 token
      *
      */
-    fun joinGroup(groupId : Long?): JsonResult<GroupTable>
+    fun joinGroup(groupId : Long, groupVerifyCode: String?): JsonResult<GroupTable>
 
 
     /**

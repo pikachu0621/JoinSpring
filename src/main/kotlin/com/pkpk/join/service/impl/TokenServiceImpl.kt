@@ -3,6 +3,7 @@ package com.pkpk.join.service.impl
 import com.pkpk.join.base.BaseServiceImpl
 import com.pkpk.join.config.AppConfig
 import com.pkpk.join.mapper.TokenTableMapper
+import com.pkpk.join.model.JoinGroupTable
 import com.pkpk.join.model.TokenTable
 import com.pkpk.join.service.ITokenService
 import com.pkpk.join.utils.OtherUtils
@@ -26,7 +27,7 @@ class TokenServiceImpl : BaseServiceImpl(), ITokenService {
     override fun put(userId: Long, userAccount: String, userPassword: String, tokenTime: Long): TokenTable {
         val createToken = OtherUtils.createToken(appConfig.appConfigEdit.tokenSalt, "$userId", userAccount, userPassword, "$tokenTime")
         // 删除上一个用户绑定的数据
-        tokenTableManager.deleteByField("user_id", userId)
+        tokenTableManager.deleteByField(TokenTable::userId, userId)
         logi("创建的token $createToken")
         return TokenTable(userId, createToken, tokenTime).apply {
             tokenTableManager.insert(this)

@@ -5,6 +5,7 @@ import com.pkpk.join.model.GroupTable
 import com.pkpk.join.model.UserTable
 import com.pkpk.join.utils.JsonResult
 import org.springframework.web.multipart.MultipartFile
+import javax.servlet.http.HttpServletRequest
 
 
 /**
@@ -16,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile
 interface IBackstageService {
 
     /**
+     * todo 可为全局传参
+     *
      * @param userId        用户ID
      * @param userPassword  用户密码
      * @param userSex       用户姓别
@@ -95,8 +98,16 @@ interface IBackstageService {
      *
      */
     fun rootEditUserInfo(
+        userId: Long,
+        userPassword: String?,
+        userSex: Boolean?,
+        userNickname: String?,
+        userUnit: String?,
+        userBirth: String?,
+        userIntroduce: String?,
+        userGrade: Int?,
+        userLimit: Boolean?,
         userImage: MultipartFile?,
-        argument: EditUserInfoArgument?
     ): JsonResult<Boolean>
 
 

@@ -6,6 +6,7 @@ import com.pkpk.join.service.*
 import com.pkpk.join.utils.*
 import com.pkpk.join.utils.MD5Utils.getFileMd5
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
 import org.springframework.util.MimeTypeUtils
 import org.springframework.web.multipart.MultipartFile
@@ -25,8 +26,11 @@ class PictureServiceImpl : BaseServiceImpl(), IPictureService {
     @Autowired
     private lateinit var userLogServiceImpl: UserLogServiceImpl
 
+    @Autowired
+    private lateinit var resourceLoader: ResourceLoader
+
     override fun requestImage(
-        pictureMd5: String?,
+        pictureMd5: String,
         c: String?
     ): BufferedImage {
         // 限制时间
@@ -35,15 +39,27 @@ class PictureServiceImpl : BaseServiceImpl(), IPictureService {
             if (!OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.imageTime, c!!)) throw DateTimeImageException()
         }
         val file = File("${appConfig.configUserImageFilePath()}$pictureMd5")
-        logi(file.name)
+        // logi(file.name)
         if (!file.exists()) throw FileNulException()
         return ImageIO.read(ImageIO.createImageInputStream(file))
     }
 
+    override fun requestStaticImage(pictureName: String, c: String?): BufferedImage {
+        // 限制时间
+        if (appConfig.appConfigEdit.imageTime != -1L) {
+            if (OtherUtils.isFieldEmpty(c)) throw ParameterException()
+            if (!OtherUtils.createTimeAESBCB(appConfig.appConfigEdit.imageTime, c!!)) throw DateTimeImageException()
+        }
+        try {
+            return ImageIO.read(resourceLoader.getResource(appConfig.configStaticPicPath + pictureName).inputStream)
+        } catch (e: Exception){
+            throw DateTimeImageException()
+        }
+    }
 
-    override fun upImage(imageFile: MultipartFile?): JsonResult<String> {
+
+    override fun upImage(imageFile: MultipartFile): JsonResult<String> {
         if (OtherUtils.isFieldEmpty(imageFile)) throw ParameterException()
-        imageFile!!
         if (imageFile.isEmpty) throw FileNulException()
         imageFile.contentType ?: throw FileTypeException()
         val parseMimeType = MimeTypeUtils.parseMimeType(imageFile.contentType!!)

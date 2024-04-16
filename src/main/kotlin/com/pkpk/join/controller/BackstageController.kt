@@ -11,6 +11,7 @@ import com.pkpk.join.utils.JsonResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import javax.servlet.http.HttpServletRequest
 
 
 @RestController
@@ -28,7 +29,7 @@ class BackstageController : BaseController(), IBackstageService {
         @RequestParam("password") rootPassword: String,
     ) = backstageServiceImpl.loginRoot(rootAccount, rootPassword)
 
-   
+
     @GetMapping("/info")
     override fun verifyToken(@RequestParam("token") token: String, needRoot: Boolean) =
         backstageServiceImpl.verifyToken(token)
@@ -50,9 +51,28 @@ class BackstageController : BaseController(), IBackstageService {
     @PostMapping("/edit-user")
     @ResponseBody
     override fun rootEditUserInfo(
-        @RequestParam("image", required = false) userImage: MultipartFile?,
-        @RequestBody argument: IBackstageService.EditUserInfoArgument?,
-    ) = backstageServiceImpl.rootEditUserInfo(userImage, argument)
+        @RequestParam userId: Long,
+        @RequestParam(required = false) userPassword: String?,
+        @RequestParam(required = false) userSex: Boolean?,
+        @RequestParam(required = false) userNickname: String?,
+        @RequestParam(required = false) userUnit: String?,
+        @RequestParam(required = false) userBirth: String?,
+        @RequestParam(required = false) userIntroduce: String?,
+        @RequestParam(required = false) userGrade: Int?,
+        @RequestParam(required = false) userLimit: Boolean?,
+        @RequestParam(required = false) userImage: MultipartFile?,
+    ) = backstageServiceImpl.rootEditUserInfo(
+        userId,
+        userPassword,
+        userSex,
+        userNickname,
+        userUnit,
+        userBirth,
+        userIntroduce,
+        userGrade,
+        userLimit,
+        userImage
+    )
 
     @PostMapping("/edit-group")
     @ResponseBody

@@ -15,7 +15,7 @@ interface UserLogMapper : BaseMapper<UserLogTable>{
     fun deleteAll()
 
 
-    @Select("SELECT * FROM $TABLE_USER_LOGIN_LOG ORDER BY `id` #{order}") // create_time  时间排序会丢失相同数据 desc
+    @Select("SELECT * FROM $TABLE_USER_LOGIN_LOG ORDER BY `id` \${order}") // create_time  时间排序会丢失相同数据 desc
     fun queryAll(order: String = "ASC"): List<UserLogTable>?
 
 }

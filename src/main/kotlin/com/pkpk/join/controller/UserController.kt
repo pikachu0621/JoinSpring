@@ -32,17 +32,11 @@ class UserController : BaseController(), IUserService {
     override fun userInfoByToken() = userServiceImpl.userInfoByToken()
 
 
-    @GetMapping("/user-img", "/user-img/*", produces = [MediaType.IMAGE_PNG_VALUE])
-    override fun userImage(
-        @RequestParam("c", required = false) c: String?,
-        @RequestParam("uid", required = false) userId: Long?
-    ) = userServiceImpl.userImage(c, userId)
-
 
     @PostMapping("/edit-img")
     @ResponseBody
     override fun editImage(
-        @RequestParam("img", required = false) userImage: MultipartFile?
+        @RequestParam("img", required = true) userImage: MultipartFile
     ) =  userServiceImpl.editImage(userImage)
 
 

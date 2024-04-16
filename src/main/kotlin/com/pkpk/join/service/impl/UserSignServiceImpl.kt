@@ -158,7 +158,7 @@ class UserSignServiceImpl : BaseServiceImpl(), IUserSignService {
 
     override fun delUserSignBySign(signId: Long) {
         startSignServiceImpl.verifySign(signId)
-        userSignTableMapper.deleteByField( "sign_id", signId)
+        userSignTableMapper.deleteByField( UserSignTable::signId, signId)
     }
 
 
